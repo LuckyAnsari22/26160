@@ -1,0 +1,95 @@
+Ensuring infrastructure is up...
+time="2026-09-22T18:34:29+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container alice Running 
+ Container bob Running 
+Setting up servers on Bob...
+time="2026-09-22T18:34:29+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:34:30+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:34:31+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:34:32+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+==========================================
+Generating dataset for config: tunnel-aes256gcm-ecp256-pfs
+Skipping tunnel-aes256gcm-ecp256-pfs - all captures already present and non-empty.
+==========================================
+Generating dataset for config: tunnel-aes128cbc-sha256-modp2048-pfs
+Skipping tunnel-aes128cbc-sha256-modp2048-pfs - all captures already present and non-empty.
+==========================================
+Generating dataset for config: tunnel-aes256cbc-sha1-modp2048-nopfs
+Skipping tunnel-aes256cbc-sha1-modp2048-nopfs - all captures already present and non-empty.
+==========================================
+Generating dataset for config: tunnel-aes128gcm-curve25519-pfs
+Skipping tunnel-aes128gcm-curve25519-pfs - all captures already present and non-empty.
+==========================================
+Generating dataset for config: transport-aes256gcm-ecp256-pfs
+Skipping transport-aes256gcm-ecp256-pfs - all captures already present and non-empty.
+==========================================
+Generating dataset for config: transport-aes128cbc-sha256-modp2048-pfs
+Skipping transport-aes128cbc-sha256-modp2048-pfs - all captures already present and non-empty.
+==========================================
+Generating dataset for config: tunnel-weak-3des-sha1-modp1024
+Skipping tunnel-weak-3des-sha1-modp1024 - all captures already present and non-empty.
+==========================================
+Generating dataset for config: tunnel-aes256gcm-ecp256-pfs-ipv6
+Switching to tunnel-aes256gcm-ecp256-pfs-ipv6...
+time="2026-09-22T18:34:38+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container moon Recreate 
+ Container sun Recreate 
+ Container moon Recreated 
+ Container sun Recreated 
+ Container moon Starting 
+ Container sun Starting 
+ Container moon Started 
+ Container sun Started 
+Waiting for charon and tunnels to establish (10s)...
+Skipping initiate (--no-initiate); connection is loaded, not yet up.
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_ike_handshake.pcap
+time="2026-09-22T18:34:53+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:34:53+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:34:59+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:01+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:02+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_icmp.pcap
+time="2026-09-22T18:35:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating icmp traffic from alice to fd02::10 for 15 seconds...
+time="2026-09-22T18:35:23+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:25+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_bulk.pcap
+time="2026-09-22T18:35:26+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:26+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating bulk traffic from alice to fd02::10 for 15 seconds...
+time="2026-09-22T18:35:44+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:46+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_web.pcap
+time="2026-09-22T18:35:47+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:48+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating web traffic from alice to fd02::10 for 15 seconds...
+time="2026-09-22T18:35:50+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:53+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:55+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:35:58+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:01+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:03+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_video.pcap
+time="2026-09-22T18:36:06+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:07+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating video traffic from alice to fd02::10 for 15 seconds...
+time="2026-09-22T18:36:24+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:27+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_voip.pcap
+time="2026-09-22T18:36:28+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:28+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating voip traffic from alice to fd02::10 for 15 seconds...
+time="2026-09-22T18:36:46+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:48+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_email.pcap
+time="2026-09-22T18:36:49+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:36:49+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating email traffic from alice to fd02::10 for 15 seconds...
+time="2026-09-22T18:37:07+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T18:37:09+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+==========================================
+Traffic generation complete.
+Manifest saved to: ../data/raw/dataset_manifest.csv
+Total PCAPs: 68 (includes header)

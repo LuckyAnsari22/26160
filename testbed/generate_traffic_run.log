@@ -1,0 +1,281 @@
+Ensuring infrastructure is up...
+time="2026-09-22T16:53:04+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container alice Running 
+ Container bob Running 
+Setting up servers on Bob...
+time="2026-09-22T16:53:04+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T16:53:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T16:53:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T16:53:06+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+==========================================
+Generating dataset for config: tunnel-aes256gcm-ecp256-pfs
+Switching to tunnel-aes256gcm-ecp256-pfs...
+time="2026-09-22T16:53:08+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container moon Recreate 
+ Container sun Recreate 
+ Container sun Recreated 
+ Container moon Recreated 
+ Container moon Starting 
+ Container sun Starting 
+ Container moon Started 
+ Container sun Started 
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T16:53:26+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs_icmp.pcap
+time="2026-09-22T16:53:32+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T16:53:32+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating icmp traffic to 192.168.2.10 for 15 seconds...
+time="2026-09-22T16:53:49+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T16:53:52+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+--> Capturing: tunnel-aes256gcm-ecp256-pfs_bulk.pcap
+time="2026-09-22T16:53:52+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-09-22T16:53:53+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+Generating bulk traffic to 192.168.2.10 for 15 seconds...
+time="2026-09-22T16:54:10+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+unexpected EOF
+time="2026-09-22T17:26:40+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: tunnel-aes256gcm-ecp256-pfs_web.pcap
+time="2026-09-22T17:26:41+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs_web.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs_video.pcap
+time="2026-09-22T17:26:42+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs_video.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs_voip.pcap
+time="2026-09-22T17:26:42+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs_voip.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs_email.pcap
+time="2026-09-22T17:26:43+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs_email.pcap
+==========================================
+Generating dataset for config: tunnel-aes128cbc-sha256-modp2048-pfs
+Switching to tunnel-aes128cbc-sha256-modp2048-pfs...
+time="2026-09-22T17:26:44+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:26:57+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: tunnel-aes128cbc-sha256-modp2048-pfs_icmp.pcap
+time="2026-09-22T17:27:03+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128cbc-sha256-modp2048-pfs_icmp.pcap
+--> Capturing: tunnel-aes128cbc-sha256-modp2048-pfs_bulk.pcap
+time="2026-09-22T17:27:03+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128cbc-sha256-modp2048-pfs_bulk.pcap
+--> Capturing: tunnel-aes128cbc-sha256-modp2048-pfs_web.pcap
+time="2026-09-22T17:27:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128cbc-sha256-modp2048-pfs_web.pcap
+--> Capturing: tunnel-aes128cbc-sha256-modp2048-pfs_video.pcap
+time="2026-09-22T17:27:06+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128cbc-sha256-modp2048-pfs_video.pcap
+--> Capturing: tunnel-aes128cbc-sha256-modp2048-pfs_voip.pcap
+time="2026-09-22T17:27:06+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128cbc-sha256-modp2048-pfs_voip.pcap
+--> Capturing: tunnel-aes128cbc-sha256-modp2048-pfs_email.pcap
+time="2026-09-22T17:27:07+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128cbc-sha256-modp2048-pfs_email.pcap
+==========================================
+Generating dataset for config: tunnel-aes256cbc-sha1-modp2048-nopfs
+Switching to tunnel-aes256cbc-sha1-modp2048-nopfs...
+time="2026-09-22T17:27:07+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:27:21+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: tunnel-aes256cbc-sha1-modp2048-nopfs_icmp.pcap
+time="2026-09-22T17:27:27+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256cbc-sha1-modp2048-nopfs_icmp.pcap
+--> Capturing: tunnel-aes256cbc-sha1-modp2048-nopfs_bulk.pcap
+time="2026-09-22T17:27:27+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256cbc-sha1-modp2048-nopfs_bulk.pcap
+--> Capturing: tunnel-aes256cbc-sha1-modp2048-nopfs_web.pcap
+time="2026-09-22T17:27:28+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256cbc-sha1-modp2048-nopfs_web.pcap
+--> Capturing: tunnel-aes256cbc-sha1-modp2048-nopfs_video.pcap
+time="2026-09-22T17:27:29+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256cbc-sha1-modp2048-nopfs_video.pcap
+--> Capturing: tunnel-aes256cbc-sha1-modp2048-nopfs_voip.pcap
+time="2026-09-22T17:27:30+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256cbc-sha1-modp2048-nopfs_voip.pcap
+--> Capturing: tunnel-aes256cbc-sha1-modp2048-nopfs_email.pcap
+time="2026-09-22T17:27:30+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256cbc-sha1-modp2048-nopfs_email.pcap
+==========================================
+Generating dataset for config: tunnel-aes128gcm-curve25519-pfs
+Switching to tunnel-aes128gcm-curve25519-pfs...
+time="2026-09-22T17:27:32+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:27:45+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: tunnel-aes128gcm-curve25519-pfs_icmp.pcap
+time="2026-09-22T17:27:51+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128gcm-curve25519-pfs_icmp.pcap
+--> Capturing: tunnel-aes128gcm-curve25519-pfs_bulk.pcap
+time="2026-09-22T17:27:51+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128gcm-curve25519-pfs_bulk.pcap
+--> Capturing: tunnel-aes128gcm-curve25519-pfs_web.pcap
+time="2026-09-22T17:27:52+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128gcm-curve25519-pfs_web.pcap
+--> Capturing: tunnel-aes128gcm-curve25519-pfs_video.pcap
+time="2026-09-22T17:27:53+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128gcm-curve25519-pfs_video.pcap
+--> Capturing: tunnel-aes128gcm-curve25519-pfs_voip.pcap
+time="2026-09-22T17:27:53+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128gcm-curve25519-pfs_voip.pcap
+--> Capturing: tunnel-aes128gcm-curve25519-pfs_email.pcap
+time="2026-09-22T17:27:54+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes128gcm-curve25519-pfs_email.pcap
+==========================================
+Generating dataset for config: transport-aes256gcm-ecp256-pfs
+Switching to transport-aes256gcm-ecp256-pfs...
+time="2026-09-22T17:27:55+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:28:09+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: transport-aes256gcm-ecp256-pfs_icmp.pcap
+time="2026-09-22T17:28:14+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes256gcm-ecp256-pfs_icmp.pcap
+--> Capturing: transport-aes256gcm-ecp256-pfs_bulk.pcap
+time="2026-09-22T17:28:15+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes256gcm-ecp256-pfs_bulk.pcap
+--> Capturing: transport-aes256gcm-ecp256-pfs_web.pcap
+time="2026-09-22T17:28:16+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes256gcm-ecp256-pfs_web.pcap
+--> Capturing: transport-aes256gcm-ecp256-pfs_video.pcap
+time="2026-09-22T17:28:16+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes256gcm-ecp256-pfs_video.pcap
+--> Capturing: transport-aes256gcm-ecp256-pfs_voip.pcap
+time="2026-09-22T17:28:17+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes256gcm-ecp256-pfs_voip.pcap
+--> Capturing: transport-aes256gcm-ecp256-pfs_email.pcap
+time="2026-09-22T17:28:18+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes256gcm-ecp256-pfs_email.pcap
+==========================================
+Generating dataset for config: transport-aes128cbc-sha256-modp2048-pfs
+Switching to transport-aes128cbc-sha256-modp2048-pfs...
+time="2026-09-22T17:28:19+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:28:32+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: transport-aes128cbc-sha256-modp2048-pfs_icmp.pcap
+time="2026-09-22T17:28:38+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes128cbc-sha256-modp2048-pfs_icmp.pcap
+--> Capturing: transport-aes128cbc-sha256-modp2048-pfs_bulk.pcap
+time="2026-09-22T17:28:39+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes128cbc-sha256-modp2048-pfs_bulk.pcap
+--> Capturing: transport-aes128cbc-sha256-modp2048-pfs_web.pcap
+time="2026-09-22T17:28:39+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes128cbc-sha256-modp2048-pfs_web.pcap
+--> Capturing: transport-aes128cbc-sha256-modp2048-pfs_video.pcap
+time="2026-09-22T17:28:40+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes128cbc-sha256-modp2048-pfs_video.pcap
+--> Capturing: transport-aes128cbc-sha256-modp2048-pfs_voip.pcap
+time="2026-09-22T17:28:41+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes128cbc-sha256-modp2048-pfs_voip.pcap
+--> Capturing: transport-aes128cbc-sha256-modp2048-pfs_email.pcap
+time="2026-09-22T17:28:41+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping transport-aes128cbc-sha256-modp2048-pfs_email.pcap
+==========================================
+Generating dataset for config: tunnel-weak-3des-sha1-modp1024
+Switching to tunnel-weak-3des-sha1-modp1024...
+time="2026-09-22T17:28:42+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:28:55+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: tunnel-weak-3des-sha1-modp1024_icmp.pcap
+time="2026-09-22T17:29:01+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-weak-3des-sha1-modp1024_icmp.pcap
+--> Capturing: tunnel-weak-3des-sha1-modp1024_bulk.pcap
+time="2026-09-22T17:29:02+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-weak-3des-sha1-modp1024_bulk.pcap
+--> Capturing: tunnel-weak-3des-sha1-modp1024_web.pcap
+time="2026-09-22T17:29:02+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-weak-3des-sha1-modp1024_web.pcap
+--> Capturing: tunnel-weak-3des-sha1-modp1024_video.pcap
+time="2026-09-22T17:29:03+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-weak-3des-sha1-modp1024_video.pcap
+--> Capturing: tunnel-weak-3des-sha1-modp1024_voip.pcap
+time="2026-09-22T17:29:04+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-weak-3des-sha1-modp1024_voip.pcap
+--> Capturing: tunnel-weak-3des-sha1-modp1024_email.pcap
+time="2026-09-22T17:29:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-weak-3des-sha1-modp1024_email.pcap
+==========================================
+Generating dataset for config: tunnel-aes256gcm-ecp256-pfs-ipv6
+Switching to tunnel-aes256gcm-ecp256-pfs-ipv6...
+time="2026-09-22T17:29:05+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+Waiting for charon and tunnels to establish (10s)...
+time="2026-09-22T17:29:19+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_icmp.pcap
+time="2026-09-22T17:29:25+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs-ipv6_icmp.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_bulk.pcap
+time="2026-09-22T17:29:25+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs-ipv6_bulk.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_web.pcap
+time="2026-09-22T17:29:26+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs-ipv6_web.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_video.pcap
+time="2026-09-22T17:29:27+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs-ipv6_video.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_voip.pcap
+time="2026-09-22T17:29:27+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs-ipv6_voip.pcap
+--> Capturing: tunnel-aes256gcm-ecp256-pfs-ipv6_email.pcap
+time="2026-09-22T17:29:28+05:30" level=warning msg="D:\\Downloads\\26160\\testbed\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+ERROR: could not detect moon's WAN interface, skipping tunnel-aes256gcm-ecp256-pfs-ipv6_email.pcap
+==========================================
+Traffic generation complete.
+Manifest saved to: ../data/raw/dataset_manifest.csv
+Total PCAPs: 3 (includes header)

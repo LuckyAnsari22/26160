@@ -1,0 +1,23 @@
+WARNING: Wireshark is installed, but cannot read manuf !
+D:\tmp_pip\scapy_install\scapy\layers\ipsec.py:512: CryptographyDeprecationWarning: TripleDES has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.TripleDES and will be removed from this module in 48.0.0.
+  cipher=algorithms.TripleDES,
+D:\tmp_pip\scapy_install\scapy\layers\ipsec.py:516: CryptographyDeprecationWarning: TripleDES has been moved to cryptography.hazmat.decrepit.ciphers.algorithms.TripleDES and will be removed from this module in 48.0.0.
+  cipher=algorithms.TripleDES,
+isakmp.next_payload: 33
+isakmp.exch_type: 34
+payload 0: class=ISAKMP_payload next_payload=34 load_type=<class 'bytes'> load_len=36
+  raw load bytes: 00000024010100030300000c01000014800e010003000008020000050000000804000013
+payload 1: class=ISAKMP_payload next_payload=40 load_type=<class 'bytes'> load_len=68
+  raw load bytes: 0013000053f0046059adcdf357e134dbb5cf0f07ba851e071ebbc1de0557b3f8f35e89b6cec8cf5b5815683902240ba906c30a903af1f457fc86c0af4e41db1235ecab1a
+payload 2: class=ISAKMP_payload next_payload=41 load_type=<class 'bytes'> load_len=32
+  raw load bytes: 40d816de3da5b3d9ae2a4e3790ab110b807741bad2ee3cedcee63215e058c4ab
+payload 3: class=ISAKMP_payload next_payload=41 load_type=<class 'bytes'> load_len=24
+  raw load bytes: 0000400483238d33ae07fcdfa2d8de3129e7bf3957936587
+payload 4: class=ISAKMP_payload next_payload=41 load_type=<class 'bytes'> load_len=24
+  raw load bytes: 000040053c208267324e7cb02a627c748ac1908b94fe2f9b
+payload 5: class=ISAKMP_payload next_payload=41 load_type=<class 'bytes'> load_len=4
+  raw load bytes: 0000402e
+payload 6: class=ISAKMP_payload next_payload=41 load_type=<class 'bytes'> load_len=12
+  raw load bytes: 0000402f0002000300040005
+payload 7: class=ISAKMP_payload next_payload=0 load_type=<class 'bytes'> load_len=4
+  raw load bytes: 00004016
