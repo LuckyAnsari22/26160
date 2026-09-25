@@ -25,33 +25,33 @@ The platform combines a **dual-engine architecture**:
 The system operates strictly locally with no external APIs or cloud dependencies, ensuring complete data privacy for sensitive packet captures.
 
 ```mermaid
-graph TD
+flowchart TD
     %% User Inputs
-    subgraph Input Phase
-        PCAP[PCAP / PCAPNG File] --> UploadAPI[FastAPI Upload Endpoint]
+    subgraph InputPhase ["Input Phase"]
+        PCAP["PCAP / PCAPNG File"] --> UploadAPI["FastAPI Upload Endpoint"]
     end
 
     %% Backend Processing
-    subgraph Backend Engine (Python / FastAPI)
-        UploadAPI --> IKEParser[IKE/ESP Protocol Parser]
-        IKEParser --> |Extracts Key Exchange Data| ComplianceEngine[Compliance & Scoring Engine]
-        IKEParser --> |Extracts Packet Flow Shapes| FeatureExtractor[SPLT Feature Extractor]
+    subgraph BackendEngine ["Backend Engine (Python / FastAPI)"]
+        UploadAPI --> IKEParser["IKE/ESP Protocol Parser"]
+        IKEParser -->|"Extracts Key Exchange Data"| ComplianceEngine["Compliance & Scoring Engine"]
+        IKEParser -->|"Extracts Packet Flow Shapes"| FeatureExtractor["SPLT Feature Extractor"]
         
-        FeatureExtractor --> |Flow Statistics| MLModel[Random Forest Classifier]
-        MLModel --> |Classification Output| SHAP[SHAP Tree Explainer]
+        FeatureExtractor -->|"Flow Statistics"| MLModel["Random Forest Classifier"]
+        MLModel -->|"Classification Output"| SHAP["SHAP Tree Explainer"]
         
-        ComplianceEngine --> ThreatMatrix[Threat Matrix Generator]
+        ComplianceEngine --> ThreatMatrix["Threat Matrix Generator"]
     end
 
     %% Export & Reporting
-    subgraph Reporting & Output
-        ComplianceEngine --> JSONResponse[JSON API Response]
+    subgraph ReportingOutput ["Reporting & Output"]
+        ComplianceEngine --> JSONResponse["JSON API Response"]
         SHAP --> JSONResponse
         ThreatMatrix --> JSONResponse
         
-        JSONResponse --> PDFGen[PDF Report Generator]
-        JSONResponse --> UIRender[HTML Dashboard UI]
-        JSONResponse --> SIEM[SIEM / Syslog Emitter]
+        JSONResponse --> PDFGen["PDF Report Generator"]
+        JSONResponse --> UIRender["HTML Dashboard UI"]
+        JSONResponse --> SIEM["SIEM / Syslog Emitter"]
     end
 ```
 
