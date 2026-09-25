@@ -1,0 +1,38 @@
+{
+    "IKE_VERSION": {
+        "IKEv1": {"severity": "CRITICAL", "cap": 25, "message": "IKEv1 is deprecated (RFC 8247) and vulnerable to offline dictionary attacks."},
+        "IKEv2": {"severity": "PASS", "cap": 100, "message": "IKEv2 compliant."}
+    },
+    "ENCRYPTION": {
+        "DES": {"severity": "CRITICAL", "cap": 25, "message": "DES provides zero confidentiality against modern attacks."},
+        "NULL": {"severity": "CRITICAL", "cap": 25, "message": "NULL encryption provides zero confidentiality."},
+        "3DES": {"severity": "HIGH", "cap": 59, "message": "3DES is a legacy 64-bit block cipher vulnerable to SWEET32 (CVE-2016-2183)."},
+        "AES-CBC-128": {"severity": "MEDIUM", "cap": 79, "message": "AES-CBC is phasing out. Vulnerable to padding oracles if MAC is misconfigured."},
+        "AES-CBC-256": {"severity": "MEDIUM", "cap": 79, "message": "AES-CBC is phasing out. Vulnerable to padding oracles if MAC is misconfigured."},
+        "AES-GCM-128": {"severity": "PASS", "cap": 100, "message": "Modern AEAD encryption (RFC 8221)."},
+        "AES-GCM-256": {"severity": "PASS", "cap": 100, "message": "Modern AEAD encryption (RFC 8221)."},
+        "CHACHA20-POLY1305": {"severity": "PASS", "cap": 100, "message": "Modern AEAD encryption (RFC 8221)."}
+    },
+    "INTEGRITY": {
+        "MD5": {"severity": "CRITICAL", "cap": 25, "message": "MD5 is cryptographically broken and vulnerable to collisions."},
+        "SHA1": {"severity": "MEDIUM", "cap": 79, "message": "SHA1 is deprecated due to theoretical collision weaknesses."},
+        "SHA256": {"severity": "PASS", "cap": 100, "message": "Strong integrity algorithm."},
+        "SHA384": {"severity": "PASS", "cap": 100, "message": "Strong integrity algorithm."},
+        "SHA512": {"severity": "PASS", "cap": 100, "message": "Strong integrity algorithm."}
+    },
+    "DH_GROUP": {
+        "1": {"severity": "HIGH", "cap": 59, "message": "Group 1 (768-bit) provides <112 bits of security (Logjam)."},
+        "2": {"severity": "HIGH", "cap": 59, "message": "Group 2 (1024-bit) provides <112 bits of security (Logjam)."},
+        "5": {"severity": "HIGH", "cap": 59, "message": "Group 5 (1536-bit) provides marginal security."},
+        "14": {"severity": "MEDIUM", "cap": 90, "message": "Group 14 (MODP2048) meets baseline 112-bit security, but ECC transition recommended."},
+        "19": {"severity": "PASS", "cap": 100, "message": "Group 19 (ECP256) provides strong ECC security."},
+        "20": {"severity": "PASS", "cap": 100, "message": "Group 20 (ECP384) provides strong ECC security."},
+        "21": {"severity": "PASS", "cap": 100, "message": "Group 21 (ECP521) provides strong ECC security."},
+        "31": {"severity": "PASS", "cap": 100, "message": "Group 31 (Curve25519) provides strong ECC security."}
+    },
+    "REPLAY_READINESS": {
+        "MONOTONIC": {"severity": "PASS", "cap": 100, "message": "ESP sequence numbers are present and monotonically incrementing per-SPI (RFC 4303 §3.3.3 sender compliance verified). Note: receiver-side anti-replay window enforcement is local policy and not observable from passive capture."},
+        "DUPLICATE_SEQ": {"severity": "HIGH", "cap": 59, "message": "Duplicate ESP sequence numbers detected within the same SPI — the sender is violating RFC 4303 §3.3.3 (MUST NOT generate duplicate sequence numbers). This undermines anti-replay protection even if the receiver's window is correctly configured."},
+        "NON_MONOTONIC": {"severity": "MEDIUM", "cap": 79, "message": "ESP sequence numbers are not strictly monotonically incrementing per-SPI. This may indicate packet reordering or a non-conformant implementation. Anti-replay window may still function if gaps are within window size, but sender compliance cannot be confirmed."}
+    }
+}
