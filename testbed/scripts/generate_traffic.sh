@@ -130,10 +130,10 @@ generate_traffic() {
             done
             ;;
         "email")
-            # Email: Small sporadic TCP transfers simulating SMTP
-            for i in $(seq 1 5); do
-                docker compose exec $src_container sh -c "echo 'HELO alice\nMAIL FROM: alice@test.com\nDATA\n$(head -c 1000 /dev/urandom | base64)\n.\nQUIT' | nc $target_ip 25" >/dev/null 2>&1
-                sleep 2
+            # Email: Short TCP bursts simulating SMTP/IMAP emails with attachments
+            for i in $(seq 1 3); do
+                docker compose exec $src_container iperf3 -c $target_ip -n 50K >/dev/null 2>&1
+                sleep 3
             done
             ;;
     esac
