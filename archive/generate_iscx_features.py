@@ -8,10 +8,10 @@ np.random.seed(99)
 def generate_iscx_features(num_samples_per_class=20):
     """
     Simulates features extracted from the ISCXVPN2016 dataset.
-    Crucially, these features include WAN jitter and GRO/TSO artifacts,
-    meaning standard deviations (std_iat, std_len) will be shifted compared
-    to the pristine lab data in features.csv. This forces the model to prove
-    it learned robust thresholds, not just overfit to lab latency.
+    HONESTY CAVEAT: This script generates synthetic data based on assumed 
+    distributions. It does NOT process real PCAPs from the actual ISCXVPN2016 dataset.
+    The goal is to test if the model architecture can generalize across varied 
+    synthetic shapes, but this is NOT real-world validation.
     """
     classes = ["voip", "video", "web", "icmp", "bulk", "email"]
     configs = ["iscx-replay"]

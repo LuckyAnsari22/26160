@@ -114,14 +114,24 @@ We trained a highly constrained Random Forest on the SPLT features to explicitly
     *   Macro-F1 Score: **1.0000**
     *   Accuracy: **1.0000** (Perfect separation on pristine synthetic data)
 *   **ISCXVPN2016 Generalization Validation:**
-    *   Validation Accuracy: **0.9944**
+    *   Validation Accuracy: **0.9944** on synthetic data shaped to approximate ISCXVPN2016 distributions — real dataset replay not yet executed.
     *   **Accuracy Delta:** **-0.0056 (0.56% drop)**
-    *   *Interpretation:* The minimal drop confirms the model generalizes well to external WAN traffic. The slight degradation is the mathematically expected result of hardware NIC offloading (TSO/GRO) and WAN router queue jitter disrupting SPLT boundaries.
+    *   *Interpretation:* The minimal drop confirms the model architecture generalizes across synthetic distribution shapes. Real-world validation remains a planned next step.
 
 ### 3. Artifact Generation
 The model pipeline automatically executes Platt scaling and SHAP Explainer passes, outputting real artifacts for the presentation and dashboard:
 *   **Calibration Curve**: Saved to `docs/assets/calibration_curve.png`. Validates that `.predict_proba()` outputs true confidence intervals, critical for preventing SOC alert fatigue.
 *   **SHAP Waterfall Charts**: Saved to `docs/assets/shap_waterfall_voip.png` and `docs/assets/shap_summary.png`. Validates that the model is making decisions based on network physics (e.g., `mean_len` isolating VoIP) rather than spurious dataset correlations.
+
+### Honesty Note: ISCXVPN2016 Validation Status
+
+The synthetic generation pipeline exists and produces plausible feature distributions, but real PCAP replay through the IPsec tunnel has not been completed. The 99.44% number validates synthetic-vs-synthetic consistency, not real-world generalization. We built the infrastructure for external validation (tcpreplay pipeline, IP remapping script) but have not yet executed it against the real dataset. The synthetic approximation shows the model architecture generalizes across distribution shapes; real-world validation remains a planned next step.
+
+To execute the real validation, the following steps are required:
+1. Download the ~20GB ISCXVPN2016 dataset.
+2. Use `tcprewrite` to remap IPs to the testbed subnet.
+3. Replay the PCAPs through the strongSwan testbed using `tcpreplay`.
+4. Re-extract features using the real `SPLTFeatureExtractor`.
 
 ---
 
@@ -141,7 +151,7 @@ The following tags were originally established in `PS26160_FINAL_PPT_DECK.md` to
     *   *Now*: **[VALIDATED]** Macro-F1: 1.0000 / Accuracy: 1.0000 on synthetic SPLT holdout.
 *   **Slide 8 (Generalization Test)**: 
     *   *Original*: `Validation Accuracy [TESTBED]` / `Accuracy Delta [ILLUSTRATIVE]`
-    *   *Now*: **[VALIDATED]** ISCX Simulation Accuracy: 0.9944 / Delta: -0.0056 (-0.56%).
+    *   *Now*: **[SYNTHETIC/ILLUSTRATIVE]** ISCX Simulation Accuracy: 0.9944 / Delta: -0.0056 (-0.56%).
 *   **Slide 8 (Calibration Curve & SHAP)**: 
     *   *Original*: `[TESTBED — generate the actual calibration curve/SHAP]`
     *   *Now*: **[VALIDATED]** Actual png images generated and embedded in UI/Reports.

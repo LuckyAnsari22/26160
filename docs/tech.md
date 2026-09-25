@@ -7,7 +7,7 @@
 - **ML**: Python, scikit-learn (Random Forest), `CalibratedClassifierCV` (Platt scaling), SHAP (TreeExplainer)
 - **Backend/Dashboard**: FastAPI, React
 - **Reporting/Integration**: JSON-over-Syslog output, PDF/CSV report export
-- **Validation data**: own lab captures + public **ISCXVPN2016** dataset replayed via `tcpreplay` for generalization testing **[state VALIDATED once actually run, otherwise PLANNED]**
+- **Validation data**: own lab captures + synthetic approximations of **ISCXVPN2016** dataset **[SYNTHETIC/ILLUSTRATIVE - tcpreplay of real dataset planned]**
 
 ### Methodology / Process
 
@@ -42,7 +42,7 @@ The slide explicitly shows:
 | Backend                                | ✅        | FastAPI                                                       |
 | Frontend                               | ✅        | React                                                         |
 | Reporting                              | ✅        | PDF, CSV, JSON-over-Syslog                                    |
-| Validation dataset                     | ✅        | Own captures + ISCXVPN2016                                    |
+| Validation dataset                     | ✅        | Own captures + synthetic ISCXVPN2016 approx                   |
 | tcpreplay                              | ⚠️       | Mentioned in validation section                               |
 | Hardware                               | ❌        | Not specifically shown                                        |
 

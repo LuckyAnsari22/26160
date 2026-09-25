@@ -173,6 +173,48 @@ def _classify_and_simulate(flow: dict) -> dict:
     adaptive_df, adaptive_overhead = apply_adaptive_padding(row.copy(), target_overhead=0.3)
     adaptive_confidence = float(np.max(ML_MODEL.predict_proba(adaptive_df[FEATURE_COLS])[0])) * 100
 
+    shap_explanation = None
+    try:
+        import shap
+        try:
+            base_estimator = ML_MODEL.estimator
+        except AttributeError:
+            base_estimator = ML_MODEL.estimators_[0].estimator
+            
+        explainer = shap.TreeExplainer(base_estimator)
+        shap_values = explainer.shap_values(X)
+        
+        class_idx = np.where(ML_MODEL.classes_ == pred)[0][0]
+        if isinstance(shap_values, list):
+            sv = shap_values[class_idx][0]
+        elif len(shap_values.shape) == 3:
+            sv = shap_values[0, :, class_idx]
+        else:
+            sv = shap_values[0]
+            
+        expected_val = explainer.expected_value
+        if isinstance(expected_val, list) or isinstance(expected_val, np.ndarray):
+            expected_val = expected_val[class_idx]
+            
+        top_features = []
+        for i, col in enumerate(FEATURE_COLS):
+            top_features.append({
+                "feature": col,
+                "shap_value": float(sv[i]),
+                "actual_value": float(X.iloc[0][i])
+            })
+            
+        top_features.sort(key=lambda x: abs(x["shap_value"]), reverse=True)
+        
+        shap_explanation = {
+            "base_value": float(expected_val),
+            "top_features": top_features,
+            "predicted_class": str(pred)
+        }
+    except Exception as e:
+        logger.error(f"SHAP computation failed: {e}")
+        shap_explanation = None
+
     return {
         "status": "classified",
         "predicted_class": str(pred),
@@ -189,6 +231,7 @@ def _classify_and_simulate(flow: dict) -> dict:
             "adaptive_overhead_pct": round(adaptive_overhead * 100, 2),
             "adaptive_confidence": round(adaptive_confidence, 1),
         },
+        "shap_explanation": shap_explanation,
     }
 
 
