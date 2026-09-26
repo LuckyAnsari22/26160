@@ -1,0 +1,11 @@
+.git
+__pycache__
+testbed/
+archive/
+tests/
+data/raw/
+*.pyc
+*.pyo
+.env
+.venv
+venv/

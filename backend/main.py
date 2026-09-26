@@ -5,6 +5,7 @@ import traceback
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 
 # Relative imports assuming execution from root
 import sys
@@ -33,9 +34,10 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="AI-Powered IPsec Analyzer API", version="1.0")
 
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -551,6 +553,9 @@ async def export_report(analysis_id: str, report_type: str = "executive"):
 
     return FileResponse(out_path, media_type="application/pdf", filename=os.path.basename(out_path))
 
+
+# Mount frontend static files last so it doesn't shadow API routes
+app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True), name="frontend")
 
 if __name__ == "__main__":
     import uvicorn
