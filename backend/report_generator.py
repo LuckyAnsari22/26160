@@ -1,4 +1,6 @@
 import os
+import re
+import unicodedata
 from fpdf import FPDF
 from datetime import datetime
 from typing import Dict, Any, Optional
@@ -15,6 +17,44 @@ SEVERITY_COLORS = {
     "PASS":     (39, 174, 96),    # Green
     "INFO":     (127, 140, 141),  # Gray
 }
+
+
+# Helvetica is a core PDF font: latin-1 only. Known punctuation gets a
+# readable ASCII equivalent; anything else outside latin-1 is decomposed
+# (e.g. accented letters) or, failing that, replaced with "?".
+_UNICODE_REPLACEMENTS = {
+    "–": "-",    # en-dash
+    "‘": "'",    # left single quote
+    "’": "'",    # right single quote
+    "‚": "'",    # single low-9 quote
+    "“": '"',    # left double quote
+    "”": '"',    # right double quote
+    "„": '"',    # double low-9 quote
+    "…": "...",  # ellipsis
+    "•": "*",    # bullet
+    "→": "->",   # right arrow
+    "§": "S.",   # section sign
+    "≤": "<=",   # less-than-or-equal
+    "≥": ">=",   # greater-than-or-equal
+    "⚠": "!",    # warning sign
+}
+_EM_DASH_RE = re.compile(r"\s*[—―]\s*")
+
+
+def _latin1_safe(text: str) -> str:
+    if not isinstance(text, str) or text.isascii():
+        return text
+    text = _EM_DASH_RE.sub(" - ", text)
+    for src, dst in _UNICODE_REPLACEMENTS.items():
+        text = text.replace(src, dst)
+    out = []
+    for ch in text:
+        if ord(ch) < 256:
+            out.append(ch)
+        else:
+            decomposed = unicodedata.normalize("NFKD", ch).encode("latin-1", "ignore").decode("latin-1")
+            out.append(decomposed or "?")
+    return "".join(out)
 
 
 def _severity_color(severity: str):
@@ -55,18 +95,15 @@ class IPsecReportPDF(FPDF):
     @staticmethod
     def _safe(text: str) -> str:
         """Replace Unicode chars that Helvetica (latin-1) can't encode."""
-        return (text
-                .replace("\u2014", "--")   # em-dash
-                .replace("\u2013", "-")    # en-dash
-                .replace("\u2018", "'")    # left single quote
-                .replace("\u2019", "'")    # right single quote
-                .replace("\u201c", '"')    # left double quote
-                .replace("\u201d", '"')    # right double quote
-                .replace("\u2026", "...")  # ellipsis
-                .replace("\u00a7", "S.")   # section sign
-                .replace("\u2264", "<=")   # less-than-or-equal
-                .replace("\u2265", ">=")   # greater-than-or-equal
-                )
+        return _latin1_safe(text)
+
+    def normalize_text(self, text: str) -> str:
+        # fpdf2 routes every string through here before writing it, so
+        # sanitizing at this point covers all cell()/multi_cell() call sites -
+        # not just the ones that remember to call _safe(). Finding text from
+        # rule_engine.py (e.g. the duplicate-ESP-sequence message) contains
+        # an em dash and used to 500 the export via the unsanitized paths.
+        return super().normalize_text(_latin1_safe(text))
 
     def header(self):
         self.set_font("helvetica", "B", 13)
@@ -347,6 +384,38 @@ def _render_key_lifetime(pdf: IPsecReportPDF, compliance: Dict):
         pdf.italic_text(f"Not assessable: {kl.get('reason', 'SA lifetimes are local policy, not observable on the wire.')}")
 
 
+# Above this bandwidth overhead a countermeasure that "works" is flagged as
+# likely impractical (mirrors HIGH_OVERHEAD_PCT in frontend/index.html).
+HIGH_OVERHEAD_PCT = 100
+
+
+def _countermeasure_outcomes(classification: Dict[str, Any]) -> list:
+    """
+    Per-countermeasure before/after for this flow. A countermeasure only
+    counts as effective if simulated confidence actually went down - the
+    adaptive-padding heuristic can raise confidence on individual flows
+    (see docs/countermeasure_results.md), and the report must not present
+    that as an improvement.
+    """
+    cm = classification.get("countermeasures") or {}
+    if not cm:
+        return []
+    before = classification.get("confidence", 0)
+    outcomes = []
+    for key, label, name in (("mtu", "MTU Padding", "MTU padding"),
+                             ("adaptive", "Adaptive Padding", "adaptive padding")):
+        after = cm.get(f"{key}_confidence", 0)
+        outcomes.append({
+            "label": label,
+            "name": name,
+            "before": before,
+            "after": after,
+            "drop": before - after,
+            "overhead": cm.get(f"{key}_overhead_pct", 0),
+        })
+    return outcomes
+
+
 def _render_classification_section(pdf: IPsecReportPDF, data: Dict[str, Any], detailed: bool = False):
     classification = data.get("classification", {})
     status = classification.get("status", "indeterminate")
@@ -403,28 +472,35 @@ def _render_classification_section(pdf: IPsecReportPDF, data: Dict[str, Any], de
         pdf.subsection_title("Countermeasure Simulation")
         pdf.body_text("Simulated Traffic Flow Confidentiality (TFC) padding countermeasures:")
 
-        mtu_oh = cm.get("mtu_overhead_pct", 0)
-        mtu_conf = cm.get("mtu_confidence", 0)
-        adapt_oh = cm.get("adaptive_overhead_pct", 0)
-        adapt_conf = cm.get("adaptive_confidence", 0)
-
-        pdf.metric("MTU Padding", f"{confidence:.1f}% -> {mtu_conf:.1f}% confidence  |  {mtu_oh:.1f}% bandwidth overhead")
-        pdf.metric("Adaptive Padding", f"{confidence:.1f}% -> {adapt_conf:.1f}% confidence  |  {adapt_oh:.1f}% bandwidth overhead")
+        outcomes = _countermeasure_outcomes(classification)
+        for o in outcomes:
+            result = f"-{o['drop']:.1f}pp" if o["drop"] > 0 else "no reduction for this flow"
+            pdf.metric(
+                o["label"],
+                f"{o['before']:.1f}% -> {o['after']:.1f}% confidence ({result})  |  {o['overhead']:.1f}% BW overhead",
+                (0, 0, 0) if o["drop"] > 0 else _severity_color("MEDIUM"),
+            )
 
         if detailed:
-            # Recommend the better countermeasure
-            mtu_drop = confidence - mtu_conf
-            adapt_drop = confidence - adapt_conf
-            if mtu_drop > adapt_drop and mtu_oh <= adapt_oh * 1.2:
+            effective = sorted((o for o in outcomes if o["drop"] > 0), key=lambda o: -o["drop"])
+            if not effective:
                 pdf.body_text(
-                    f"Recommendation: MTU padding provides better confidence reduction "
-                    f"({mtu_drop:.1f}pp) at lower bandwidth cost ({mtu_oh:.1f}%)."
+                    "Recommendation: neither simulated countermeasure reduced classifier "
+                    "confidence for this flow."
                 )
-            elif adapt_drop > 0:
+            else:
+                best = effective[0]
                 pdf.body_text(
-                    f"Recommendation: Adaptive padding provides {adapt_drop:.1f}pp "
-                    f"confidence reduction at {adapt_oh:.1f}% bandwidth cost."
+                    f"Recommendation: {best['name']} gives the largest confidence reduction "
+                    f"for this flow ({best['drop']:.1f}pp) at {best['overhead']:.1f}% bandwidth cost."
                 )
+                cheaper = [o for o in effective[1:] if o["overhead"] < best["overhead"]]
+                if cheaper:
+                    alt = cheaper[0]
+                    pdf.body_text(
+                        f"Lower-cost alternative: {alt['name']} reduces confidence by "
+                        f"{alt['drop']:.1f}pp at {alt['overhead']:.1f}% bandwidth cost."
+                    )
         pdf.ln(2)
 
 
@@ -492,7 +568,30 @@ def _render_recommended_actions(pdf: IPsecReportPDF, data: Dict[str, Any]):
     meta = compliance.get("metadata_exposure", {})
     if meta.get("severity") in ("HIGH", "MEDIUM"):
         conf = meta.get("classifier_confidence", 0)
-        actions.append(("MEDIUM", f"Deploy traffic padding countermeasures (RFC 4303 TFC padding, MTU padding, or adaptive padding) to reduce metadata leakage. Current classifier confidence: {conf:.1f}%."))
+        outcomes = _countermeasure_outcomes(classification)
+        effective = sorted((o for o in outcomes if o["drop"] > 0), key=lambda o: -o["drop"])
+        ineffective = [o for o in outcomes if o["drop"] <= 0]
+        if not outcomes:
+            actions.append(("MEDIUM", f"Metadata leakage detected (classifier confidence {conf:.1f}%). No per-flow countermeasure simulation is available for this capture; evaluate RFC 4303 TFC padding before deploying."))
+        elif not effective:
+            actions.append(("MEDIUM", f"Metadata leakage detected (classifier confidence {conf:.1f}%). Neither simulated countermeasure reduced classifier confidence for this specific flow; this is a known limitation of the simplified adaptive-padding heuristic (see docs/countermeasure_results.md) - aggregate results across the training dataset show a net reduction, but per-flow results can vary."))
+        else:
+            helped = "; ".join(
+                f"{o['name']} lowers it to {o['after']:.1f}% (-{o['drop']:.1f}pp) at {o['overhead']:.1f}% bandwidth overhead"
+                for o in effective
+            )
+            names = " or ".join(o["name"] for o in effective)
+            text = f"Deploy {names} to reduce metadata leakage. Current classifier confidence is {conf:.1f}%; in simulation for this flow, {helped}."
+            if ineffective:
+                text += " " + " ".join(
+                    f"{o['label']} was also simulated and did not reduce confidence for this flow ({o['before']:.1f}% -> {o['after']:.1f}%)."
+                    for o in ineffective
+                )
+            # Same threshold and wording as the CISO dashboard's Recommended Fix tile.
+            for o in effective:
+                if o["overhead"] > HIGH_OVERHEAD_PCT:
+                    text += f" Note: high bandwidth cost ({o['overhead']:.1f}%) - likely impractical for real-time traffic like VoIP in production."
+            actions.append(("MEDIUM", text))
 
     if not actions:
         return

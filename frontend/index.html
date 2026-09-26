@@ -29,8 +29,13 @@
             const [isUploading, setIsUploading] = useState(false);
             const [results, setResults] = useState(null);
             const [error, setError] = useState(null);
+            // /results/{id} doesn't echo the id back, so keep the one /analyze returned for export.
+            const [analysisId, setAnalysisId] = useState(null);
+            const [exportingType, setExportingType] = useState(null);
 
-            const API_BASE = "http://localhost:8000/api/v1";
+            const API_BASE = window.location.protocol === "file:" 
+                ? "http://localhost:8000/api/v1" 
+                : `${window.location.origin}/api/v1`;
 
             const handleFileUpload = async (e) => {
                 e.preventDefault();
@@ -38,6 +43,7 @@
                 
                 setIsUploading(true);
                 setError(null);
+                setAnalysisId(null);
                 const formData = new FormData();
                 formData.append("file", file);
 
@@ -47,7 +53,8 @@
                         body: formData
                     });
                     const uploadData = await uploadRes.json();
-                    
+                    setAnalysisId(uploadData.analysis_id || null);
+
                     // Poll for results (mocked as instant here)
                     setTimeout(async () => {
                         const resultRes = await fetch(`${API_BASE}/results/${uploadData.analysis_id}`);
@@ -61,6 +68,50 @@
                     setIsUploading(false);
                 }
             };
+
+            const handleExport = async (reportType) => {
+                if (!analysisId) {
+                    setError("No analysis to export yet - upload and analyze a PCAP first.");
+                    return;
+                }
+                setExportingType(reportType);
+                setError(null);
+                try {
+                    const res = await fetch(`${API_BASE}/export/${analysisId}?report_type=${reportType}`);
+                    if (!res.ok) {
+                        const body = await res.json().catch(() => ({}));
+                        throw new Error(body.error || `Export failed (HTTP ${res.status})`);
+                    }
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${reportType === 'technical' ? 'Technical' : 'Executive'}_Report_${analysisId.slice(0, 8)}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setExportingType(null);
+                }
+            };
+
+            const renderExportButtons = () => (
+                <div className="flex gap-2">
+                    {['executive', 'technical'].map(type => (
+                        <button
+                            key={type}
+                            onClick={() => handleExport(type)}
+                            disabled={!analysisId || exportingType !== null}
+                            className="bg-green-600 text-white px-4 py-2 rounded shadow text-sm font-medium hover:bg-green-700 transition disabled:opacity-50"
+                        >
+                            {exportingType === type ? 'Exporting...' : `Export ${type === 'technical' ? 'Technical' : 'Executive'} PDF`}
+                        </button>
+                    ))}
+                </div>
+            );
 
             // Small helper: every section of main.py's real response carries its
             // own `status` (assessed/indeterminate/unavailable/classified/error),
@@ -77,6 +128,25 @@
                 </div>
             );
 
+            // Mirrors report_generator.py's _countermeasure_outcomes(): a
+            // countermeasure only "works" if simulated confidence is below the
+            // baseline - the adaptive heuristic can raise it on individual flows.
+            const HIGH_OVERHEAD_PCT = 100;
+            // One decimal place, matching the PDF report's formatting.
+            const pct = (v) => `${Number(v).toFixed(1)}%`;
+            const bestCountermeasure = (classification) => {
+                const cm = classification.countermeasures;
+                const baseline = classification.confidence;
+                const working = [
+                    { name: 'MTU padding', after: cm.mtu_confidence, overhead: cm.mtu_overhead_pct },
+                    { name: 'Adaptive padding', after: cm.adaptive_confidence, overhead: cm.adaptive_overhead_pct },
+                ]
+                    .map(o => ({ ...o, drop: baseline - o.after }))
+                    .filter(o => o.drop > 0)
+                    .sort((a, b) => b.drop - a.drop);
+                return working[0] || null;
+            };
+
             const renderCISOView = () => {
                 if (!results) return null;
                 const compliance = results.compliance;
@@ -85,6 +155,8 @@
                 // classification.status === 'classified') - main.py never sends
                 // a top-level results.countermeasures at all.
                 const countermeasures = classification.countermeasures;
+                const best = classification.status === 'classified' && countermeasures
+                    ? bestCountermeasure(classification) : null;
 
                 return (
                     <div className="space-y-6">
@@ -109,7 +181,7 @@
                             {classification.status === 'classified' ? (
                                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                                     <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Traffic Leakage</h3>
-                                    <div className="mt-2 text-4xl font-bold text-orange-500">{classification.confidence}%</div>
+                                    <div className="mt-2 text-4xl font-bold text-orange-500">{pct(classification.confidence)}</div>
                                     <p className="text-sm text-gray-500 mt-2">Adversary certainty of {classification.predicted_class} traffic</p>
                                 </div>
                             ) : (
@@ -119,8 +191,20 @@
                             {classification.status === 'classified' && countermeasures ? (
                                 <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                                     <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Recommended Fix</h3>
-                                    <div className="mt-2 text-4xl font-bold text-green-600">Adaptive</div>
-                                    <p className="text-sm text-gray-500 mt-2">Drops leak to {countermeasures.adaptive_confidence}% for {countermeasures.adaptive_overhead_pct}% BW cost</p>
+                                    {best ? (
+                                        <div>
+                                            <div className="mt-2 text-4xl font-bold text-green-600">{best.name}</div>
+                                            <p className="text-sm text-gray-500 mt-2">Drops leak from {pct(classification.confidence)} to {pct(best.after)} for {pct(best.overhead)} BW cost</p>
+                                            {best.overhead > HIGH_OVERHEAD_PCT && (
+                                                <p className="text-xs text-amber-600 mt-2">⚠ Note: high bandwidth cost ({pct(best.overhead)}) - likely impractical for real-time traffic like VoIP in production.</p>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <div className="mt-2 text-2xl font-bold text-gray-600">None effective</div>
+                                            <p className="text-sm text-gray-500 mt-2">No tested countermeasure reduced leakage for this flow (MTU padding: {pct(countermeasures.mtu_confidence)}, adaptive padding: {pct(countermeasures.adaptive_confidence)} vs. {pct(classification.confidence)} baseline).</p>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <NotAvailableCard title="Recommended Fix" reason={classification.reason || "Requires a successful classification first."} />
@@ -155,7 +239,7 @@
                                 <div className="ml-3">
                                     <h3 className="text-sm font-medium text-red-800">High Confidence Traffic Alert: {classification.predicted_class.toUpperCase()}</h3>
                                     <div className="mt-2 text-sm text-red-700">
-                                        <p>Adversary Confidence: {classification.confidence}%</p>
+                                        <p>Adversary Confidence: {pct(classification.confidence)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -225,9 +309,12 @@
 
                 if (compliance.status !== 'assessed') {
                     return (
-                        <div className="bg-gray-50 border-l-4 border-gray-400 p-4">
-                            <h3 className="text-sm font-medium text-gray-700">Compliance could not be assessed</h3>
-                            <p className="mt-2 text-sm text-gray-600">{compliance.reason}</p>
+                        <div className="space-y-4">
+                            <div className="flex justify-end">{renderExportButtons()}</div>
+                            <div className="bg-gray-50 border-l-4 border-gray-400 p-4">
+                                <h3 className="text-sm font-medium text-gray-700">Compliance could not be assessed</h3>
+                                <p className="mt-2 text-sm text-gray-600">{compliance.reason}</p>
+                            </div>
                         </div>
                     );
                 }
@@ -236,9 +323,7 @@
                     <div className="space-y-6">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-bold text-gray-800">NIST SP 800-77 Compliance Breakdown</h3>
-                            <button className="bg-green-600 text-white px-4 py-2 rounded shadow text-sm font-medium hover:bg-green-700 transition">
-                                Export PDF Report
-                            </button>
+                            {renderExportButtons()}
                         </div>
                         {compliance.caveats && compliance.caveats.length > 0 && (
                             <div className="bg-amber-50 border-l-4 border-amber-400 p-4">
@@ -315,7 +400,8 @@
                                 {activeTab === 'ciso' && renderCISOView()}
                                 {activeTab === 'soc' && renderSOCView()}
                                 {activeTab === 'auditor' && renderAuditorView()}
-                                
+                                {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+
                                 <div className="mt-8 pt-4 border-t border-gray-200 text-center">
                                     <button onClick={() => setResults(null)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Analyze Another File</button>
                                 </div>
