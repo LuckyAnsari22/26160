@@ -128,23 +128,79 @@
                 </div>
             );
 
-            // Mirrors report_generator.py's _countermeasure_outcomes(): a
-            // countermeasure only "works" if simulated confidence is below the
-            // baseline - the adaptive heuristic can raise it on individual flows.
+            // classification.countermeasure_outcomes is the output of
+            // report_generator.py's _countermeasure_outcomes(), attached by the
+            // backend - the same data the PDF report uses. The Recommended Fix
+            // tile and the cost-benefit chart both read it, so neither can drift
+            // from the report. A countermeasure only "works" if its simulated
+            // confidence is below the baseline (drop > 0): the adaptive heuristic
+            // can raise confidence on individual flows.
             const HIGH_OVERHEAD_PCT = 100;
             // One decimal place, matching the PDF report's formatting.
             const pct = (v) => `${Number(v).toFixed(1)}%`;
+            const signedPp = (v) => `${v > 0 ? '−' : '+'}${Math.abs(v).toFixed(1)} pp`;
+            const capitalize = (t) => t.charAt(0).toUpperCase() + t.slice(1);
             const bestCountermeasure = (classification) => {
-                const cm = classification.countermeasures;
-                const baseline = classification.confidence;
-                const working = [
-                    { name: 'MTU padding', after: cm.mtu_confidence, overhead: cm.mtu_overhead_pct },
-                    { name: 'Adaptive padding', after: cm.adaptive_confidence, overhead: cm.adaptive_overhead_pct },
-                ]
-                    .map(o => ({ ...o, drop: baseline - o.after }))
+                const working = (classification.countermeasure_outcomes || [])
                     .filter(o => o.drop > 0)
                     .sort((a, b) => b.drop - a.drop);
-                return working[0] || null;
+                return working[0] ? { ...working[0], name: capitalize(working[0].name) } : null;
+            };
+
+            // Per-flow cost-benefit chart: one row per simulated countermeasure,
+            // a line from baseline confidence to simulated confidence (lower is
+            // better), plus the bandwidth it costs. Replaces a static image that
+            // showed dataset-level numbers unrelated to the uploaded capture.
+            const CountermeasureChart = ({ classification }) => {
+                const outcomes = classification.countermeasure_outcomes || [];
+                const W = 680, top = 50, rowH = 64, left = 150, right = 150;
+                const H = top + outcomes.length * rowH + 8;
+                const plotW = W - left - right;
+                const x = (v) => left + (Math.max(0, Math.min(100, v)) / 100) * plotW;
+                const anyWorks = outcomes.some(o => o.drop > 0);
+                const summary = outcomes.map(o =>
+                    `${o.label}: confidence ${pct(o.before)} to ${pct(o.after)}, ${pct(o.overhead)} bandwidth overhead`).join('; ');
+                return (
+                    <div>
+                        <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-3xl mx-auto" role="img" aria-label={`Countermeasure cost-benefit for this flow. ${summary}.`}>
+                            <text x={left} y={14} fontSize="11" fill="#6b7280">Model confidence (lower is better)</text>
+                            <text x={W - 8} y={14} fontSize="11" fill="#6b7280" textAnchor="end">Bandwidth cost</text>
+                            {[0, 25, 50, 75, 100].map(t => (
+                                <g key={t}>
+                                    <line x1={x(t)} x2={x(t)} y1={top - 8} y2={H - 8} stroke="#e5e7eb" />
+                                    <text x={x(t)} y={top - 12} fontSize="10" fill="#9ca3af" textAnchor="middle">{t}%</text>
+                                </g>
+                            ))}
+                            <line x1={x(classification.confidence)} x2={x(classification.confidence)} y1={top - 8} y2={H - 8} stroke="#f97316" strokeDasharray="3 3" />
+                            {outcomes.map((o, i) => {
+                                const cy = top + i * rowH + rowH / 2;
+                                const works = o.drop > 0;
+                                const color = works ? '#16a34a' : '#9ca3af';
+                                const costly = o.overhead > HIGH_OVERHEAD_PCT;
+                                return (
+                                    <g key={o.label}>
+                                        <text x={0} y={cy - 4} fontSize="13" fontWeight="600" fill="#1f2937">{o.label}</text>
+                                        <text x={0} y={cy + 13} fontSize="11" fill={works ? '#16a34a' : '#b45309'}>
+                                            {works ? `${signedPp(o.drop)} confidence` : `${signedPp(o.drop)}: no reduction`}
+                                        </text>
+                                        <line x1={x(o.before)} x2={x(o.after)} y1={cy} y2={cy} stroke={color} strokeWidth="3" />
+                                        <circle cx={x(o.before)} cy={cy} r="6" fill="#f97316" />
+                                        <circle cx={x(o.after)} cy={cy} r="6" fill={color} stroke="#fff" strokeWidth="1.5" />
+                                        <text x={x(o.after)} y={cy + 20} fontSize="11" fill={color} textAnchor="middle">{pct(o.after)}</text>
+                                        <text x={W - 8} y={cy + 4} fontSize="13" fontWeight="600" fill={costly ? '#b45309' : '#1f2937'} textAnchor="end">
+                                            +{pct(o.overhead)}{costly ? ' ⚠' : ''}
+                                        </text>
+                                    </g>
+                                );
+                            })}
+                        </svg>
+                        <p className="text-xs text-gray-500 mt-3 max-w-3xl mx-auto">
+                            Simulated on this capture's own flow. Orange marks the baseline: {pct(classification.confidence)} confidence that this is {classification.predicted_class} traffic.
+                            {!anyWorks && ' Neither countermeasure reduced confidence for this flow.'}
+                            {outcomes.some(o => o.overhead > HIGH_OVERHEAD_PCT) && ' ⚠ marks a bandwidth cost above 100%, likely impractical for real-time traffic.'}
+                        </p>
+                    </div>
+                );
             };
 
             const renderCISOView = () => {
@@ -213,7 +269,13 @@
 
                         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                             <h3 className="text-lg font-bold text-gray-800 mb-4">Countermeasure Cost-Benefit Analysis</h3>
-                            <img src={`${API_BASE}/assets/padding_tradeoff_curve.png`} alt="Tradeoff Curve" className="w-full max-w-2xl mx-auto border rounded" />
+                            {classification.status === 'classified' && (classification.countermeasure_outcomes || []).length > 0 ? (
+                                <CountermeasureChart classification={classification} />
+                            ) : (
+                                <p className="text-sm text-gray-500">
+                                    Not available: {classification.reason || 'countermeasures are simulated only on a classified flow.'}
+                                </p>
+                            )}
                         </div>
                     </div>
                 );

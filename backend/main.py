@@ -27,7 +27,7 @@ from parser.ike_parser import IKEParser
 from parser.rule_engine import SecurityRuleEngine
 from ml_pipeline.feature_extractor import SPLTFeatureExtractor
 from ml_pipeline.adversarial_padding import apply_mtu_padding, apply_adaptive_padding
-from backend.report_generator import generate_executive_report, generate_technical_report
+from backend.report_generator import generate_executive_report, generate_technical_report, _countermeasure_outcomes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -217,7 +217,7 @@ def _classify_and_simulate(flow: dict) -> dict:
         logger.error(f"SHAP computation failed: {e}")
         shap_explanation = None
 
-    return {
+    result = {
         "status": "classified",
         "predicted_class": str(pred),
         "confidence": round(confidence, 1),
@@ -235,6 +235,11 @@ def _classify_and_simulate(flow: dict) -> dict:
         },
         "shap_explanation": shap_explanation,
     }
+    # Per-countermeasure before/after/overhead from the same function the PDF
+    # report uses, so the dashboard's Recommended Fix tile and cost-benefit
+    # chart can never disagree with the report (or with each other).
+    result["countermeasure_outcomes"] = _countermeasure_outcomes(result)
+    return result
 
 
 def _infer_mode(flow: dict) -> dict:
