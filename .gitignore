@@ -1,2 +1,6 @@
 data/raw/
 data/uploads/
+
+# landing page (built inside the Docker image)
+landing/node_modules/
+landing/dist/

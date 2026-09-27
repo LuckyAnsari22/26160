@@ -1,0 +1,36 @@
+<!-- 6. LIVE DEMO -->
+<section id="demo" class="relative border-t border-white/5" aria-labelledby="demo-title">
+  <div class="mx-auto grid max-w-7xl items-center gap-12 px-5 py-28 sm:px-8 sm:py-36 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+    <div>
+      <h2 id="demo-title" class="text-[clamp(2rem,4.4vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.025em] text-white">
+        Run it on a real capture
+      </h2>
+      <p class="mt-5 max-w-[30rem] text-lg leading-relaxed text-slate-400">
+        The dashboard is live. Upload a .pcap from your own gateway, or try one of the sample captures in the
+        repository, and get the CISO, analyst and auditor views in a few seconds.
+      </p>
+      <div class="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+        <a data-dashboard-link href="/app/" class="btn-primary">See it in action</a>
+        <a data-github-link href="#" target="_blank" rel="noopener" class="link-quiet">Sample captures on GitHub</a>
+      </div>
+    </div>
+
+    <figure class="demo-frame">
+      <div class="flex items-center gap-2 border-b border-white/8 px-4 py-2.5" aria-hidden="true">
+        <span class="size-2 rounded-full bg-white/15"></span>
+        <span class="size-2 rounded-full bg-white/15"></span>
+        <span class="size-2 rounded-full bg-white/15"></span>
+        <span data-dashboard-host class="ml-3 truncate font-mono text-[11px] text-slate-500"></span>
+      </div>
+      <img
+        src="/assets/dashboard-preview.png"
+        alt="The IPsecGuard dashboard's CISO view for the VoIP sample: 86.2% traffic leakage, a recommended MTU padding fix, and the per-capture cost-benefit chart."
+        width="1440"
+        height="900"
+        loading="lazy"
+        decoding="async"
+        class="block h-auto w-full"
+      />
+    </figure>
+  </div>
+</section>

@@ -9,3 +9,7 @@ data/raw/
 .env
 .venv
 venv/
+
+# landing: npm ci runs inside the image; never ship host (Windows) binaries
+landing/node_modules
+landing/dist

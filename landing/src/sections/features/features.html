@@ -1,0 +1,55 @@
+<!-- 5. FEATURES: flat, no 3D. A deliberate pause for the eye (and for phones). -->
+<section id="features" class="relative border-t border-white/5" aria-labelledby="features-title">
+  <div class="mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36">
+    <h2 id="features-title" class="max-w-2xl text-[clamp(2rem,4.4vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.025em] text-white">
+      What the platform does
+    </h2>
+
+    <div class="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <article class="feature lg:col-span-2">
+        <h3 class="feature-title">Zero decryption</h3>
+        <p class="feature-body">
+          IPsecGuard never asks for keys and never opens a payload. Everything it knows comes from headers, sizes and
+          timing that an eavesdropper on the same link could also see. That is the point: it shows you what they see.
+        </p>
+        <p class="feature-proof">session keys required: none</p>
+      </article>
+
+      <article class="feature">
+        <h3 class="feature-title">NIST SP 800-77 compliance engine</h3>
+        <p class="feature-body">
+          Negotiated IKE parameters are checked against NIST SP 800-77: cipher, integrity, DH group, PFS and key
+          lifetime. Each finding caps the score, so one weak choice can't hide behind good ones.
+        </p>
+        <p class="feature-proof">3DES + SHA-1 + MODP-1024 scores 41/100</p>
+      </article>
+
+      <article class="feature feature--ai">
+        <h3 class="feature-title">Explainable AI (SHAP)</h3>
+        <p class="feature-body">
+          Every classification comes with SHAP values computed for that flow, so an analyst sees why the model
+          decided, not only what it decided.
+        </p>
+        <p class="feature-proof">pkt_count +0.136, max_iat +0.128</p>
+      </article>
+
+      <article class="feature">
+        <h3 class="feature-title">Countermeasure simulator</h3>
+        <p class="feature-body">
+          Simulates MTU padding and adaptive padding on the captured flow, re-scores it, and reports the bandwidth
+          each one costs. A fix is recommended only if confidence actually falls.
+        </p>
+        <p class="feature-proof">adaptive padding: −3.9 pp for 17% bandwidth</p>
+      </article>
+
+      <article class="feature">
+        <h3 class="feature-title">Executive and technical PDF reports</h3>
+        <p class="feature-body">
+          A one-page summary for leadership, and a full report for auditors with every finding, the SHAP evidence
+          and the limits of what a passive capture can prove.
+        </p>
+        <p class="feature-proof">exported straight from the dashboard</p>
+      </article>
+    </div>
+  </div>
+</section>

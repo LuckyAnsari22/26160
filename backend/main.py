@@ -4,7 +4,7 @@ import logging
 import traceback
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 # Relative imports assuming execution from root
@@ -63,7 +63,10 @@ async def cache_control_headers(request, call_next):
         if response.status_code in (200, 304):
             response.headers["Cache-Control"] = ASSET_CACHE_CONTROL
     elif not path.startswith("/api/"):
-        is_html = path.endswith("/") or path.endswith(".html")
+        # Pages: "/", "/app/", "*.html", and extension-less paths such as the
+        # "/app" -> "/app/" redirect. Anything with a file extension is an asset.
+        last = path.rsplit("/", 1)[-1]
+        is_html = last == "" or last.endswith(".html") or "." not in last
         response.headers["Cache-Control"] = HTML_CACHE_CONTROL if is_html else ASSET_CACHE_CONTROL
     return response
 
@@ -584,8 +587,36 @@ async def export_report(analysis_id: str, report_type: str = "executive"):
     return FileResponse(out_path, media_type="application/pdf", filename=os.path.basename(out_path))
 
 
-# Mount frontend static files last so it doesn't shadow API routes
-app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True), name="frontend")
+# Static mounts go last so they never shadow the /api/v1 routes above:
+# Starlette matches in registration order, and "/" matches everything.
+#   /app/  -> the dashboard SPA (frontend/index.html)
+#   /      -> the landing page (landing/ built by the Dockerfile's Node stage)
+
+
+# A Mount at "/app" only matches "/app/...", so bare "/app" would otherwise fall
+# through to the landing mount and 404. Registered before the mounts.
+@app.get("/app", include_in_schema=False)
+async def dashboard_trailing_slash():
+    return RedirectResponse(url="/app/")
+
+
+app.mount("/app",StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True), name="frontend")
+
+# landing_dist/ exists in the Docker image; landing/dist/ after a local
+# `npm run build`. Without either (e.g. uvicorn run straight from the repo),
+# send "/" to the dashboard instead of failing on a missing directory.
+LANDING_DIR = next(
+    (d for d in (os.path.join(BASE_DIR, "landing_dist"), os.path.join(BASE_DIR, "landing", "dist")) if os.path.isdir(d)),
+    None,
+)
+if LANDING_DIR:
+    app.mount("/", StaticFiles(directory=LANDING_DIR, html=True), name="landing")
+else:
+    logger.warning("Landing page build not found (landing_dist/ or landing/dist/); '/' redirects to /app/")
+
+    @app.get("/", include_in_schema=False)
+    async def landing_missing():
+        return RedirectResponse(url="/app/")
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,0 +1,39 @@
+<!-- 1. HERO -->
+<section id="hero" class="relative flex min-h-svh items-end" aria-labelledby="hero-title">
+  <div class="hero-scrim pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+  <!-- Live readout of the simulated flow: what an outside observer can measure.
+       Deliberately quiet: it proves the scene is a model, it is not the message. -->
+  <div
+    id="flow-readout"
+    class="overlay-chrome absolute top-24 right-5 hidden opacity-55 sm:right-8 lg:block"
+    aria-hidden="true"
+  >
+    <p class="text-[11px] text-slate-400">Seen from outside the tunnel</p>
+    <dl class="mt-1.5 grid grid-cols-[auto_auto] gap-x-3 gap-y-0.5 font-mono text-[11px] leading-snug text-slate-300">
+      <dt class="text-slate-500">rate</dt><dd data-rate>–</dd>
+      <dt class="text-slate-500">size</dt><dd data-size>–</dd>
+      <dt class="text-slate-500">flow</dt><dd data-state>–</dd>
+      <dt class="text-slate-500">body</dt><dd class="text-slate-500">sealed</dd>
+    </dl>
+    <p data-debug class="mt-2 font-mono text-[10px] text-slate-500"></p>
+  </div>
+
+  <div class="relative mx-auto w-full max-w-7xl px-5 pb-14 sm:px-8 sm:pb-20">
+    <div id="hero-copy" class="max-w-2xl">
+      <h1 id="hero-title" class="text-[clamp(2.4rem,7vw,5.6rem)] leading-[0.95] font-semibold tracking-[-0.03em] text-white">
+        <span class="block">THE VPN IS ENCRYPTED.</span>
+        <span class="headline-shadow mt-1 block">THE SHADOW ISN'T.</span>
+      </h1>
+      <p class="mt-7 max-w-[34rem] text-lg leading-relaxed text-slate-300 sm:text-xl">
+        Our platform measures what an IPsec deployment reveals without ever decrypting its payload.
+      </p>
+      <a
+        data-dashboard-link
+        href="/app/"
+        class="btn-primary mt-9"
+        >See it in action</a
+      >
+    </div>
+  </div>
+</section>

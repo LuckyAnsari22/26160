@@ -1,0 +1,18 @@
+<!-- 2. PROBLEM: same canvas, camera still moving; lines light up as you scroll. -->
+<section id="problem" class="relative h-[220vh]" aria-labelledby="problem-title">
+  <div class="sticky top-0 flex h-svh items-center">
+    <div class="problem-scrim pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <div class="relative mx-auto w-full max-w-7xl px-5 sm:px-8">
+      <h2 id="problem-title" class="sr-only">The problem</h2>
+      <div class="max-w-[36rem] space-y-5 text-[clamp(1.7rem,3.6vw,2.75rem)] leading-[1.12] font-medium tracking-[-0.02em] text-white">
+        <p data-line>IPsec secures the payload.</p>
+        <p data-line>It does nothing to hide the shape of the traffic.</p>
+        <p data-line>And that shape alone can identify what's inside.</p>
+      </div>
+      <p data-line class="mt-8 max-w-[30rem] text-base leading-relaxed text-slate-400 sm:text-lg">
+        Packet sizes and arrival times survive encryption untouched. Anyone on the path can record them, and a
+        trained model can read them.
+      </p>
+    </div>
+  </div>
+</section>

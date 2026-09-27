@@ -1,0 +1,55 @@
+<!-- 3. HOW IT WORKS: three steps, each with its own small 2D figure. -->
+<section id="how" class="relative mx-auto max-w-7xl px-5 py-28 sm:px-8 sm:py-36" aria-labelledby="how-title">
+  <h2 id="how-title" class="max-w-xl text-[clamp(2rem,4.4vw,3.4rem)] leading-[1.05] font-semibold tracking-[-0.025em] text-white">
+    From capture to countermeasure
+  </h2>
+  <p class="mt-5 max-w-[34rem] text-lg leading-relaxed text-slate-400">
+    Every number below comes from one real VoIP capture run through the live dashboard.
+  </p>
+
+  <ol class="mt-20 space-y-24 sm:space-y-32">
+    <li class="how-step grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      <div>
+        <p class="step-num">1</p>
+        <h3 class="step-title">Capture</h3>
+        <p class="step-body">
+          Upload a packet capture from your VPN gateway. IKE handshakes are read in the clear to audit the crypto
+          the two ends agreed on. ESP traffic is only measured: how big each packet is, and when it arrived.
+        </p>
+      </div>
+      <figure class="step-figure">
+        <canvas data-flow="capture" role="img" aria-label="A capture file feeding packets into the tunnel. Once inside, the packets are hidden; only the shadow band above them changes."></canvas>
+      </figure>
+    </li>
+
+    <li class="how-step grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      <div>
+        <p class="step-num">2</p>
+        <h3 class="step-title">Classify</h3>
+        <p class="step-body">
+          Sizes and timing feed a calibrated random-forest model. On this capture it names the traffic as
+          <span class="text-ai">VoIP with 86.2% confidence</span>, and SHAP values show which features gave it away:
+          the packet count first, then the gaps between packets.
+        </p>
+      </div>
+      <figure class="step-figure">
+        <canvas data-flow="classify" role="img" aria-label="The model traces the outline of the shadow and labels it VoIP, 86.2% confidence."></canvas>
+      </figure>
+    </li>
+
+    <li class="how-step grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      <div>
+        <p class="step-num">3</p>
+        <h3 class="step-title">Countermeasure</h3>
+        <p class="step-body">
+          The simulator pads every packet to full size and scores the flow again. Sizes stop leaking; timing
+          doesn't. The shadow keeps its rhythm, so confidence only falls to <span class="text-ai">68.0%</span>, at a
+          <span class="text-risk-med">435.5% bandwidth cost</span>. The report says so plainly.
+        </p>
+      </div>
+      <figure class="step-figure">
+        <canvas data-flow="counter" role="img" aria-label="Packets are padded to a uniform size. The shadow keeps its timing rhythm; model confidence falls from 86.2% to 68.0%, at a 435.5% bandwidth cost."></canvas>
+      </figure>
+    </li>
+  </ol>
+</section>

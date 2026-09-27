@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #05070d;
+  --color-ink-900: #0a0e17;
+  --color-signal: #22d3ee;   /* observable / cleartext data */
+  --color-risk-med: #f59e0b;
+  --color-risk-high: #ef4444;
+  --color-ai: #a78bfa;       /* AI/ML moments only */
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+html { background: var(--color-ink-950); }
+body {
+  background: linear-gradient(180deg, var(--color-ink-950) 0%, var(--color-ink-900) 100%);
+  color: #dbe4ee;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The second headline line is set as an outline only: a silhouette of type,
+   echoing the traffic shadow in the scene. */
+.headline-shadow {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(103 232 249 / 0.9);
+  /* Dark halo first: with a transparent fill, the shadow paints inside the
+     glyphs too, giving the stroke a dark backing so it holds contrast even when
+     a bloom flare sits right behind the text. Then a faint cyan glow. */
+  text-shadow:
+    0 0 2px rgb(5 7 13 / 0.9),
+    0 0 12px rgb(5 7 13 / 0.75),
+    0 0 28px rgb(34 211 238 / 0.14);
+}
+@supports not (-webkit-text-stroke: 1px black) {
+  .headline-shadow { color: rgb(103 232 249 / 0.85); }
+}
+
+/* Canvas vs poster. The poster is the default; the canvas shows only once the
+   scene has actually initialised, so a WebGL failure never leaves a blank hero. */
+#scene { opacity: 0; transition: opacity 1.2s ease; }
+.webgl-ready #scene { opacity: 1; }
+.webgl-ready #poster { opacity: 0; }
+#poster {
+  background:
+    url("/assets/hero-poster.jpg") center / cover no-repeat,
+    radial-gradient(ellipse 60% 45% at 58% 42%, rgb(34 211 238 / 0.12), transparent 70%),
+    radial-gradient(ellipse 30% 22% at 58% 46%, #0a0e17, transparent 80%),
+    var(--color-ink-950);
+  transition: opacity 1.2s ease;
+}
+
+/* Legibility scrim behind the hero copy, never over the vanishing point. */
+.hero-scrim {
+  background: linear-gradient(90deg, rgb(5 7 13 / 0.85) 0%, rgb(5 7 13 / 0.35) 45%, transparent 70%),
+              linear-gradient(0deg, rgb(5 7 13 / 0.9) 0%, transparent 45%);
+}
+@media (max-width: 767px) {
+  .hero-scrim { background: linear-gradient(0deg, rgb(5 7 13 / 0.95) 0%, rgb(5 7 13 / 0.6) 45%, transparent 75%); }
+}
+
+.no-webgl #flow-readout { display: none !important; }
+#flow-readout[data-burst="true"] [data-state] { color: var(--color-signal); }
+
+/* ?poster: hide overlay chrome to capture a clean still of the scene. */
+.poster-capture .overlay-chrome { display: none !important; }
+
+/* ---------------------------------------------------------------- shared */
+
+header { transition: background-color 0.3s ease, border-color 0.3s ease; border-bottom: 1px solid transparent; }
+header.is-solid {
+  background: rgb(5 7 13 / 0.82);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom-color: rgb(255 255 255 / 0.06);
+}
+
+.skip-link {
+  position: absolute; left: 1rem; top: -3rem; z-index: 50;
+  padding: 0.5rem 0.9rem; border-radius: 2px;
+  background: var(--color-signal); color: var(--color-ink-950); font-weight: 600;
+}
+.skip-link:focus { top: 1rem; }
+
+.btn-primary {
+  display: inline-flex; align-items: center;
+  padding: 0.875rem 1.5rem; border-radius: 2px;
+  border: 1px solid rgb(34 211 238 / 0.7);
+  background: rgb(34 211 238 / 0.1);
+  color: #fff; font-weight: 500; font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+.btn-primary:hover { background: rgb(34 211 238 / 0.2); }
+.btn-primary:focus-visible, .link-quiet:focus-visible, .layer-btn:focus-visible, .range:focus-visible {
+  outline: 2px solid var(--color-signal); outline-offset: 4px;
+}
+.link-quiet { color: #cbd5e1; font-size: 0.9rem; border-radius: 2px; transition: color 0.2s ease; }
+.link-quiet:hover { color: #fff; }
+
+/* ------------------------------------------------------------- problem */
+
+.problem-scrim {
+  background: linear-gradient(90deg, rgb(5 7 13 / 0.88) 0%, rgb(5 7 13 / 0.55) 38%, transparent 62%);
+}
+@media (max-width: 767px) {
+  .problem-scrim { background: rgb(5 7 13 / 0.72); }
+}
+
+/* ---------------------------------------------------------- how it works */
+
+.step-num {
+  font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-signal);
+  width: 2rem; height: 2rem; display: grid; place-items: center;
+  border: 1px solid rgb(34 211 238 / 0.45); border-radius: 999px;
+}
+.step-title { margin-top: 1.25rem; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 600; letter-spacing: -0.02em; color: #fff; }
+.step-body { margin-top: 0.9rem; max-width: 32rem; font-size: 1.0625rem; line-height: 1.7; color: #94a3b8; }
+.step-figure {
+  border: 1px solid rgb(255 255 255 / 0.07); border-radius: 6px;
+  background: linear-gradient(180deg, rgb(10 14 23 / 0.9), rgb(5 7 13 / 0.9));
+}
+.step-figure canvas { display: block; width: 100%; aspect-ratio: 4 / 3; }
+@media (min-width: 640px) { .step-figure canvas { aspect-ratio: 16 / 9; } }
+
+/* ------------------------------------------------------ packet anatomy */
+
+.anatomy-stage { aspect-ratio: 4 / 3; }
+@media (min-width: 1024px) { .anatomy-stage { aspect-ratio: 16 / 11; } }
+
+.pkt-label {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  font-size: 12px; line-height: 1.2; white-space: nowrap; transition: opacity 0.25s ease;
+}
+.pkt-label__name { font-weight: 500; }
+.pkt-label__bytes { font-family: var(--font-mono); font-size: 11px; opacity: 0.75; }
+.pkt-label--parsed { color: #67e8f9; }
+.pkt-label--sealed { color: #cbd5e1; }
+.pkt-label--unused { color: #64748b; }
+.pkt-label.is-dim { opacity: 0.25; }
+.pkt-dim { font-family: var(--font-mono); font-size: 11px; color: var(--color-ai); white-space: nowrap; }
+.is-narrow .pkt-label__name, .is-narrow .pkt-dim__note { display: none; }
+
+.range { accent-color: var(--color-signal); min-width: 10rem; max-width: 22rem; }
+
+.legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex: none; }
+.legend-swatch--parsed { background: rgb(34 211 238 / 0.25); border: 1px solid var(--color-signal); }
+.legend-swatch--sealed { background: #0c1320; border: 1px solid #475569; }
+.legend-swatch--unused { border: 1px dashed #475569; }
+.legend-swatch--measured { height: 2px; background: var(--color-ai); }
+
+.layer-btn {
+  width: 100%; display: grid; grid-template-columns: 12px 1fr auto auto; align-items: center; gap: 0.85rem;
+  padding: 1rem 0.25rem; text-align: left; color: #e2e8f0; cursor: pointer; border-radius: 2px;
+}
+.layer-btn:hover .layer-name { color: #fff; }
+.layer-kind { width: 10px; height: 10px; border-radius: 2px; }
+[data-kind="parsed"] .layer-kind { background: var(--color-signal); }
+[data-kind="sealed"] .layer-kind { background: #0c1320; border: 1px solid #64748b; }
+[data-kind="unused"] .layer-kind { border: 1px dashed #64748b; }
+.layer-name { font-weight: 500; }
+.layer-tag { font-size: 0.75rem; color: #64748b; }
+[data-kind="parsed"] .layer-tag { color: #67e8f9; }
+.layer-bytes { font-size: 0.8125rem; color: #94a3b8; min-width: 3.5rem; text-align: right; }
+.layer-btn[aria-expanded="true"] .layer-name { color: #fff; }
+.layer-panel { padding: 0 0.25rem 1.25rem 1.8rem; }
+.layer-summary { font-size: 0.9375rem; line-height: 1.6; color: #94a3b8; }
+.layer-fields {
+  margin-top: 0.85rem; display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 1rem;
+  font-family: var(--font-mono); font-size: 0.8125rem;
+}
+.layer-fields dt { color: #64748b; }
+.layer-fields dd { color: #e2e8f0; overflow-wrap: anywhere; }
+[data-kind="sealed"] .layer-fields dd:not(.is-measured) { color: #64748b; }
+.layer-fields dd.is-measured { color: var(--color-ai); }
+.layer-use { margin-top: 0.85rem; font-size: 0.9375rem; line-height: 1.6; color: #cbd5e1; }
+
+.byte-seg { height: 100%; }
+.byte-key { width: 10px; height: 10px; border-radius: 1px; flex: none; }
+.byte-seg + .byte-seg { border-left: 1px solid var(--color-ink-950); }
+.byte-seg--parsed { background: rgb(34 211 238 / 0.55); }
+.byte-seg--unused { background: repeating-linear-gradient(135deg, #334155 0 3px, transparent 3px 6px); }
+.byte-seg--sealed {
+  background: #0f1726;
+  box-shadow: inset 0 0 0 1px #334155;
+}
+
+/* -------------------------------------------------------------- features */
+
+.feature {
+  display: flex; flex-direction: column; padding: 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.08); border-radius: 6px; background: rgb(10 14 23 / 0.6);
+}
+.feature-title { font-size: 1.1875rem; font-weight: 600; letter-spacing: -0.01em; color: #fff; }
+.feature-body { margin-top: 0.75rem; line-height: 1.65; color: #94a3b8; }
+.feature-proof {
+  margin-top: auto; padding-top: 1.5rem;
+  font-family: var(--font-mono); font-size: 0.8125rem; color: #67e8f9;
+}
+.feature--ai { border-color: rgb(167 139 250 / 0.3); }
+.feature--ai .feature-proof { color: var(--color-ai); }
+
+/* ------------------------------------------------------------------ demo */
+
+.demo-frame {
+  overflow: hidden; border-radius: 6px;
+  border: 1px solid rgb(255 255 255 / 0.1); background: var(--color-ink-900);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
