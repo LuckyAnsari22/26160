@@ -1,6 +1,50 @@
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# ---------------------------------------------------------------- secrets
+# Root .env only: landing/.env is committed on purpose (public, non-secret
+# build config). Never commit machine-specific overrides.
+/.env
+*.env.local
+.env.*.local
+
+# ---------------------------------------------------------------- runtime output
+# All of these are (re)created by the code at runtime:
+#   logs/          SIEM alert log (backend/syslog_emitter.py)
+#   docs/reports/  generated PDFs (backend/report_generator.py)
+#   data/uploads/  uploaded captures (backend/main.py)
+#   dummy.pcap     scratch file (backend/run_e2e_timing.py)
+logs/
+docs/reports/
 data/raw/
 data/uploads/
+dummy.pcap
+*.log
 
-# landing page (built inside the Docker image)
+# ---------------------------------------------------------------- internal notes
+# Strategy, pitch drafts, AI-assistant transcripts and status notes stay local;
+# they are not project documentation. Real docs: README.md, landing/README.md,
+# docs/countermeasure_results.md and docs/assets/.
+PS26160_*.md
+completion_prompts.md
+docs/*.md
+!docs/countermeasure_results.md
+
+# ---------------------------------------------------------------- local tooling
+graphify-out/
+.playwright-mcp/
+
+# ---------------------------------------------------------------- landing page
+# Built inside the Docker image; never commit host (Windows) node_modules.
 landing/node_modules/
 landing/dist/
+
+# ---------------------------------------------------------------- OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
