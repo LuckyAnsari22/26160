@@ -10,13 +10,27 @@ REPORTS_DIR = os.path.join(BASE_DIR, "docs", "reports")
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 # Severity → (R, G, B) for color-coded rendering
+# Same hues as before, darkened so every one clears 4.5:1 both as text on
+# white paper and as a badge fill behind white text (the old amber/green were
+# ~2:1). Mapping of severity -> colour family is unchanged.
 SEVERITY_COLORS = {
-    "CRITICAL": (192, 57, 43),    # Red
-    "HIGH":     (211, 84, 0),     # Orange
-    "MEDIUM":   (243, 156, 18),   # Yellow-amber
-    "PASS":     (39, 174, 96),    # Green
-    "INFO":     (127, 140, 141),  # Gray
+    "CRITICAL": (185, 28, 28),    # Red      #b91c1c
+    "HIGH":     (194, 65, 12),    # Orange   #c2410c
+    "MEDIUM":   (180, 83, 9),     # Amber    #b45309
+    "PASS":     (4, 120, 87),     # Green    #047857
+    "INFO":     (71, 85, 105),    # Gray     #475569
 }
+
+# Brand styling, shared with the dashboard and landing page (see the token
+# block in frontend/index.html). The PDF stays white: the cyan accent
+# (#22d3ee) is only ~1.8:1 against white, so it is used for marks, rules and
+# bars, never for text. Text uses the brand's near-black ink and slate greys.
+BRAND_ACCENT = (34, 211, 238)    # #22d3ee  accent (non-text only)
+BRAND_INK = (10, 14, 23)         # #0a0e17  headings, wordmark
+BRAND_BODY = (30, 41, 59)        # #1e293b  body copy
+BRAND_LABEL = (71, 85, 105)      # #475569  labels, metric names
+BRAND_MUTED = (100, 116, 139)    # #64748b  secondary / italic notes
+BRAND_TRACK = (226, 232, 240)    # #e2e8f0  score-bar track
 
 
 # Helvetica is a core PDF font: latin-1 only. Known punctuation gets a
@@ -105,45 +119,69 @@ class IPsecReportPDF(FPDF):
         # an em dash and used to 500 the export via the unsanitized paths.
         return super().normalize_text(_latin1_safe(text))
 
+    def _logo_mark(self, x: float, y: float, size: float = 5.2):
+        """The brand mark (cyan ring + dot), as on the landing page and dashboard."""
+        self.set_draw_color(*BRAND_ACCENT)
+        self.set_fill_color(*BRAND_ACCENT)
+        self.set_line_width(0.55)
+        self.ellipse(x, y, size, size, style="D")
+        dot = size * 0.34
+        self.ellipse(x + (size - dot) / 2, y + (size - dot) / 2, dot, dot, style="F")
+
     def header(self):
+        top = self.get_y()
+        self._logo_mark(10, top + 1.4)
+        self.set_x(17.5)
         self.set_font("helvetica", "B", 13)
-        self.set_text_color(41, 128, 185)
+        self.set_text_color(*BRAND_INK)
         self.cell(0, 8, "IPsecGuard AI", border=False, new_x="RIGHT", new_y="TOP", align="L")
         self.set_font("helvetica", "", 9)
-        self.set_text_color(120, 120, 120)
+        self.set_text_color(*BRAND_MUTED)
         self.cell(0, 8, f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", align="R", new_x="LMARGIN", new_y="NEXT")
 
         self.set_font("helvetica", "B", 10)
-        self.set_text_color(80, 80, 80)
+        self.set_text_color(*BRAND_LABEL)
         self.cell(0, 6, self.report_title, new_x="LMARGIN", new_y="NEXT", align="L")
 
-        self.set_draw_color(41, 128, 185)
+        self.set_draw_color(*BRAND_ACCENT)
         self.set_line_width(0.6)
         self.line(10, self.get_y(), 200, self.get_y())
         self.ln(6)
 
     def footer(self):
         self.set_y(-15)
-        self.set_font("helvetica", "I", 7)
-        self.set_text_color(160, 160, 160)
+        self.set_draw_color(*BRAND_TRACK)
+        self.set_line_width(0.2)
+        self.line(10, self.get_y() + 1.5, 200, self.get_y() + 1.5)
+        self.set_font("helvetica", "", 7)
+        self.set_text_color(*BRAND_MUTED)
         self.cell(0, 10, f"IPsecGuard AI  |  {self.analyzed_filename}  |  Page {self.page_no()}/{{nb}}", align="C")
 
     def section_title(self, title: str):
-        self.set_font("helvetica", "B", 11)
-        self.set_text_color(44, 62, 80)
-        self.set_fill_color(234, 237, 240)
-        self.cell(0, 8, f"  {title}", new_x="LMARGIN", new_y="NEXT", fill=True)
+        # Cyan marker + ink heading (replaces the old grey band). Same
+        # vertical footprint as before (8 + 3) so page breaks don't move.
+        y = self.get_y()
+        self.set_fill_color(*BRAND_ACCENT)
+        self.rect(10, y + 1.5, 1.2, 5, style="F")
+        self.set_x(14)
+        self.set_font("helvetica", "B", 11.5)
+        self.set_text_color(*BRAND_INK)
+        self.cell(0, 8, title, new_x="LMARGIN", new_y="NEXT")
+        self.set_draw_color(*BRAND_TRACK)
+        self.set_line_width(0.2)
+        self.line(10, self.get_y() + 0.5, 200, self.get_y() + 0.5)
+        self.set_fill_color(255, 255, 255)
         self.ln(3)
 
     def subsection_title(self, title: str):
         self.set_font("helvetica", "B", 10)
-        self.set_text_color(52, 73, 94)
+        self.set_text_color(*BRAND_INK)
         self.cell(0, 7, title, new_x="LMARGIN", new_y="NEXT")
         self.ln(1)
 
     def metric(self, label: str, value: str, color: tuple = (0, 0, 0)):
         self.set_font("helvetica", "B", 9)
-        self.set_text_color(60, 60, 60)
+        self.set_text_color(*BRAND_LABEL)
         self.cell(65, 6, f"{label}:", border=False)
         self.set_font("helvetica", "B", 9)
         self.set_text_color(*color)
@@ -152,13 +190,13 @@ class IPsecReportPDF(FPDF):
 
     def body_text(self, text: str):
         self.set_font("helvetica", "", 9)
-        self.set_text_color(40, 40, 40)
+        self.set_text_color(*BRAND_BODY)
         self.multi_cell(0, 5, self._safe(text))
         self.ln(2)
 
     def italic_text(self, text: str):
         self.set_font("helvetica", "I", 8)
-        self.set_text_color(100, 100, 100)
+        self.set_text_color(*BRAND_MUTED)
         self.multi_cell(0, 4.5, self._safe(text))
         self.ln(2)
 
@@ -182,8 +220,8 @@ class IPsecReportPDF(FPDF):
         self.set_text_color(*color)
         self.cell(40, 18, f"{score}", align="C", ln=False)
         self.set_font("helvetica", "", 14)
-        self.set_text_color(120, 120, 120)
-        self.cell(10, 18, "/ 100", align="L", ln=False)
+        self.set_text_color(*BRAND_MUTED)
+        self.cell(24, 18, "/ 100", align="L", ln=False)
 
         self.set_font("helvetica", "B", 12)
         self.set_text_color(*color)
@@ -192,7 +230,7 @@ class IPsecReportPDF(FPDF):
 
         # Score bar
         bar_width = 130
-        self.set_fill_color(220, 220, 220)
+        self.set_fill_color(*BRAND_TRACK)
         bar_y = self.get_y()
         self.rect(10, bar_y, bar_width, 4, style="F")
         self.set_fill_color(*color)
@@ -214,13 +252,13 @@ class IPsecReportPDF(FPDF):
             badge = f" {sev} "
             self.cell(self.get_string_width(badge) + 4, 5.5, badge, fill=True, new_x="RIGHT", new_y="TOP")
 
-            self.set_text_color(100, 100, 100)
+            self.set_text_color(*BRAND_MUTED)
             self.set_fill_color(255, 255, 255)
             self.set_font("helvetica", "", 8)
             self.cell(20, 5.5, f"  Cap: {cap}", new_x="RIGHT", new_y="TOP")
 
             # Message wraps below
-            self.set_text_color(40, 40, 40)
+            self.set_text_color(*BRAND_BODY)
             self.set_font("helvetica", "", 8)
             remaining_w = self.w - self.r_margin - self.get_x()
             if remaining_w < 30:
@@ -312,7 +350,7 @@ def _render_compliance_section(pdf: IPsecReportPDF, data: Dict[str, Any], detail
                 sev_text = f"[{f['severity']}] "
                 pdf.cell(pdf.get_string_width(sev_text) + 2, 5, sev_text, ln=False)
                 pdf.set_font("helvetica", "", 9)
-                pdf.set_text_color(40, 40, 40)
+                pdf.set_text_color(*BRAND_BODY)
                 pdf.multi_cell(0, 5, f["message"])
                 pdf.ln(1)
 
@@ -608,7 +646,7 @@ def _render_recommended_actions(pdf: IPsecReportPDF, data: Dict[str, Any]):
         badge = f"[{priority}] "
         pdf.cell(pdf.get_string_width(badge) + 1, 5, badge, ln=False)
         pdf.set_font("helvetica", "", 8)
-        pdf.set_text_color(40, 40, 40)
+        pdf.set_text_color(*BRAND_BODY)
         pdf.multi_cell(0, 5, action)
         pdf.ln(1)
 
@@ -651,7 +689,7 @@ def generate_executive_report(data: Dict[str, Any]) -> str:
 
     # Title
     pdf.set_font("helvetica", "B", 15)
-    pdf.set_text_color(44, 62, 80)
+    pdf.set_text_color(*BRAND_INK)
     pdf.cell(0, 12, "Executive Summary", ln=True)
     pdf.ln(2)
 
@@ -691,7 +729,7 @@ def generate_technical_report(data: Dict[str, Any]) -> str:
 
     # Title
     pdf.set_font("helvetica", "B", 15)
-    pdf.set_text_color(44, 62, 80)
+    pdf.set_text_color(*BRAND_INK)
     pdf.cell(0, 12, "Technical Assessment Report", ln=True)
     pdf.ln(2)
 

@@ -3,21 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antigravity IPsec Analyzer Dashboard</title>
+    <title>IPsecGuard AI: dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2305070d'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%2322d3ee'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Brand tokens for the Tailwind Play CDN. Per Tailwind's CDN docs this must
+         come AFTER the CDN script: the script creates window.tailwind and would
+         replace a config assigned before it. Values are documented in <style>. -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: { 950: '#05070d', 900: '#0a0e17', 800: '#0e1624' },
+                        accent: { DEFAULT: '#22d3ee', soft: '#67e8f9' },
+                        text: '#dbe4ee',
+                        soft: '#cbd5e1',
+                        muted: '#94a3b8',
+                        dim: '#64748b',
+                        line: 'rgb(255 255 255 / 0.08)',
+                        'risk-high': '#ef4444',
+                        'risk-med': '#f59e0b',
+                        pass: '#34d399',
+                        ai: '#a78bfa',
+                    },
+                    fontFamily: {
+                        sans: ['"Space Grotesk"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+                    },
+                },
+            },
+        };
+    </script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
-        .tab-active { border-bottom: 2px solid #3b82f6; color: #1d4ed8; font-weight: 600; }
-        .tab-inactive { color: #64748b; font-weight: 500; }
-        .tab-inactive:hover { color: #3b82f6; }
+        /* ------------------------------------------------------------------
+           IPsecGuard AI design tokens, shared with the landing page.
+           Source of truth: landing/src/styles.css (@theme) and its markup.
+
+             ink-950      #05070d   page base            (--color-ink-950)
+             ink-900      #0a0e17   recessed wells       (--color-ink-900)
+             ink-800      #0e1624   cards / panels       (landing tunnel metal)
+             Depth: page ink-950 -> card ink-800 -> recessed well ink-900.
+             accent       #22d3ee   primary accent       (--color-signal)
+             accent-soft  #67e8f9   accent text, links   (headline outline)
+             text         #dbe4ee   body text            (landing body color)
+             soft         #cbd5e1   secondary emphasis   (subhead, nav link)
+             muted        #94a3b8   secondary copy
+             dim          #64748b   non-text marks only: bars, rules (4.2:1, below
+                                    the 4.5:1 needed for small text)
+             line         rgb(255 255 255 / 0.08)  borders; no drop shadows
+             risk-high    #ef4444   high / critical      (--color-risk-high)
+             risk-med     #f59e0b   medium / warnings    (--color-risk-med)
+             pass         #34d399   pass / improvement   (dashboard-only addition:
+                                                          the landing page has no
+                                                          "pass" state)
+             ai           #a78bfa   ML explanations only (--color-ai)
+             fonts        Space Grotesk (UI, headings); JetBrains Mono (data)
+           ------------------------------------------------------------------ */
+        html { background: #05070d; }
+        body {
+            background: #05070d;
+            color: #dbe4ee;
+            -webkit-font-smoothing: antialiased;
+        }
+        .tab-active { border-bottom: 2px solid #22d3ee; color: #ffffff; font-weight: 600; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #94a3b8; font-weight: 500; }
+        .tab-inactive:hover { color: #dbe4ee; }
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 1px solid rgb(34 211 238 / 0.7); background: rgb(34 211 238 / 0.1);
+            color: #ffffff; font-weight: 500; border-radius: 2px;
+            transition: background-color 0.2s ease;
+        }
+        .btn-primary:hover:not(:disabled) { background: rgb(34 211 238 / 0.2); }
+        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-primary:focus-visible, .link-accent:focus-visible, .tab-btn:focus-visible {
+            outline: 2px solid #22d3ee; outline-offset: 3px;
+        }
+        .link-accent { color: #67e8f9; font-weight: 500; border-radius: 2px; }
+        .link-accent:hover { color: #ffffff; }
+        .risk-glow { text-shadow: 0 0 24px rgb(239 68 68 / 0.35); }
+        /* A lone state message sits centred in the space below the tabs instead
+           of top-aligned above an empty viewport. Only these wrappers get it. */
+        .empty-state { display: flex; align-items: center; justify-content: center; min-height: 45vh; }
     </style>
 </head>
-<body>
+<body class="font-sans">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -33,14 +111,14 @@
             const [analysisId, setAnalysisId] = useState(null);
             const [exportingType, setExportingType] = useState(null);
 
-            const API_BASE = window.location.protocol === "file:" 
-                ? "http://localhost:8000/api/v1" 
+            const API_BASE = window.location.protocol === "file:"
+                ? "http://localhost:8000/api/v1"
                 : `${window.location.origin}/api/v1`;
 
             const handleFileUpload = async (e) => {
                 e.preventDefault();
                 if (!file) return;
-                
+
                 setIsUploading(true);
                 setError(null);
                 setAnalysisId(null);
@@ -62,7 +140,7 @@
                         setResults(resultData);
                         setIsUploading(false);
                     }, 1000);
-                    
+
                 } catch (err) {
                     setError("Failed to connect to API. Is FastAPI running on port 8000?");
                     setIsUploading(false);
@@ -105,7 +183,7 @@
                             key={type}
                             onClick={() => handleExport(type)}
                             disabled={!analysisId || exportingType !== null}
-                            className="bg-green-600 text-white px-4 py-2 rounded shadow text-sm font-medium hover:bg-green-700 transition disabled:opacity-50"
+                            className="btn-primary px-4 py-2 text-sm"
                         >
                             {exportingType === type ? 'Exporting...' : `Export ${type === 'technical' ? 'Technical' : 'Executive'} PDF`}
                         </button>
@@ -121,10 +199,10 @@
             // what crashed the whole page before (countermeasures, shap_explanation,
             // findings, predicted_class were all read unconditionally).
             const NotAvailableCard = ({ title, reason }) => (
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">{title}</h3>
-                    <div className="mt-2 text-lg font-semibold text-gray-400">Not available</div>
-                    <p className="text-sm text-gray-500 mt-2">{reason}</p>
+                <div className="bg-ink-800 p-6 rounded-md border border-line">
+                    <h3 className="text-sm font-medium text-muted">{title}</h3>
+                    <div className="mt-2 text-lg font-semibold text-soft">Not available</div>
+                    <p className="text-sm text-muted mt-2 leading-relaxed">{reason}</p>
                 </div>
             );
 
@@ -147,6 +225,12 @@
                 return working[0] ? { ...working[0], name: capitalize(working[0].name) } : null;
             };
 
+            // Chart colours: the same tokens as the rest of the page (see <style>).
+            const CHART = {
+                label: '#94a3b8', tick: '#94a3b8', grid: 'rgba(255,255,255,0.08)', text: '#dbe4ee',
+                baseline: '#f59e0b', works: '#34d399', noEffect: '#64748b', warn: '#f59e0b', surface: '#0e1624',
+            };
+
             // Per-flow cost-benefit chart: one row per simulated countermeasure,
             // a line from baseline confidence to simulated confidence (lower is
             // better), plus the bandwidth it costs. Replaces a static image that
@@ -162,39 +246,39 @@
                     `${o.label}: confidence ${pct(o.before)} to ${pct(o.after)}, ${pct(o.overhead)} bandwidth overhead`).join('; ');
                 return (
                     <div>
-                        <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-3xl mx-auto" role="img" aria-label={`Countermeasure cost-benefit for this flow. ${summary}.`}>
-                            <text x={left} y={14} fontSize="11" fill="#6b7280">Model confidence (lower is better)</text>
-                            <text x={W - 8} y={14} fontSize="11" fill="#6b7280" textAnchor="end">Bandwidth cost</text>
+                        <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-3xl mx-auto" role="img" aria-label={`Countermeasure cost-benefit for this flow. ${summary}.`} style={{ fontFamily: '"Space Grotesk", ui-sans-serif, system-ui, sans-serif' }}>
+                            <text x={left} y={14} fontSize="11" fill={CHART.label}>Model confidence (lower is better)</text>
+                            <text x={W - 8} y={14} fontSize="11" fill={CHART.label} textAnchor="end">Bandwidth cost</text>
                             {[0, 25, 50, 75, 100].map(t => (
                                 <g key={t}>
-                                    <line x1={x(t)} x2={x(t)} y1={top - 8} y2={H - 8} stroke="#e5e7eb" />
-                                    <text x={x(t)} y={top - 12} fontSize="10" fill="#9ca3af" textAnchor="middle">{t}%</text>
+                                    <line x1={x(t)} x2={x(t)} y1={top - 8} y2={H - 8} stroke={CHART.grid} />
+                                    <text x={x(t)} y={top - 12} fontSize="10" fill={CHART.tick} textAnchor="middle" style={{ fontFamily: '"JetBrains Mono", monospace' }}>{t}%</text>
                                 </g>
                             ))}
-                            <line x1={x(classification.confidence)} x2={x(classification.confidence)} y1={top - 8} y2={H - 8} stroke="#f97316" strokeDasharray="3 3" />
+                            <line x1={x(classification.confidence)} x2={x(classification.confidence)} y1={top - 8} y2={H - 8} stroke={CHART.baseline} strokeDasharray="3 3" />
                             {outcomes.map((o, i) => {
                                 const cy = top + i * rowH + rowH / 2;
                                 const works = o.drop > 0;
-                                const color = works ? '#16a34a' : '#9ca3af';
+                                const color = works ? CHART.works : CHART.noEffect;
                                 const costly = o.overhead > HIGH_OVERHEAD_PCT;
                                 return (
                                     <g key={o.label}>
-                                        <text x={0} y={cy - 4} fontSize="13" fontWeight="600" fill="#1f2937">{o.label}</text>
-                                        <text x={0} y={cy + 13} fontSize="11" fill={works ? '#16a34a' : '#b45309'}>
+                                        <text x={0} y={cy - 4} fontSize="13" fontWeight="600" fill={CHART.text}>{o.label}</text>
+                                        <text x={0} y={cy + 13} fontSize="11" fill={works ? CHART.works : CHART.warn}>
                                             {works ? `${signedPp(o.drop)} confidence` : `${signedPp(o.drop)}: no reduction`}
                                         </text>
                                         <line x1={x(o.before)} x2={x(o.after)} y1={cy} y2={cy} stroke={color} strokeWidth="3" />
-                                        <circle cx={x(o.before)} cy={cy} r="6" fill="#f97316" />
-                                        <circle cx={x(o.after)} cy={cy} r="6" fill={color} stroke="#fff" strokeWidth="1.5" />
-                                        <text x={x(o.after)} y={cy + 20} fontSize="11" fill={color} textAnchor="middle">{pct(o.after)}</text>
-                                        <text x={W - 8} y={cy + 4} fontSize="13" fontWeight="600" fill={costly ? '#b45309' : '#1f2937'} textAnchor="end">
+                                        <circle cx={x(o.before)} cy={cy} r="6" fill={CHART.baseline} />
+                                        <circle cx={x(o.after)} cy={cy} r="6" fill={color} stroke={CHART.surface} strokeWidth="2" />
+                                        <text x={x(o.after)} y={cy + 20} fontSize="11" fill={works ? CHART.works : CHART.label} textAnchor="middle" style={{ fontFamily: '"JetBrains Mono", monospace' }}>{pct(o.after)}</text>
+                                        <text x={W - 8} y={cy + 4} fontSize="13" fontWeight="600" fill={costly ? CHART.warn : CHART.text} textAnchor="end" style={{ fontFamily: '"JetBrains Mono", monospace' }}>
                                             +{pct(o.overhead)}{costly ? ' ⚠' : ''}
                                         </text>
                                     </g>
                                 );
                             })}
                         </svg>
-                        <p className="text-xs text-gray-500 mt-3 max-w-3xl mx-auto">
+                        <p className="text-xs text-muted mt-3 max-w-3xl mx-auto leading-relaxed">
                             Simulated on this capture's own flow. Orange marks the baseline: {pct(classification.confidence)} confidence that this is {classification.predicted_class} traffic.
                             {!anyWorks && ' Neither countermeasure reduced confidence for this flow.'}
                             {outcomes.some(o => o.overhead > HIGH_OVERHEAD_PCT) && ' ⚠ marks a bandwidth cost above 100%, likely impractical for real-time traffic.'}
@@ -218,16 +302,19 @@
                     <div className="space-y-6">
                         <div className="grid grid-cols-3 gap-4">
                             {compliance.status === 'assessed' ? (
-                                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Overall Risk Score</h3>
-                                    <div className="mt-2 text-4xl font-bold text-red-600">{100 - compliance.score}/100</div>
-                                    <p className="text-sm text-gray-500 mt-2">
+                                <div className="bg-ink-800 p-6 rounded-md border border-line">
+                                    <h3 className="text-sm font-medium text-muted">Overall Risk Score</h3>
+                                    <div className="mt-3 flex items-center gap-4">
+                                        <RiskGauge value={100 - compliance.score} band={riskBand(compliance.score)} />
+                                        <div className={`text-4xl font-semibold font-mono ${BAND_TEXT[riskBand(compliance.score)]}`}>{100 - compliance.score}/100</div>
+                                    </div>
+                                    <p className="text-sm text-muted mt-2">
                                         {compliance.threat_matrix.length > 0
                                             ? `${compliance.threat_matrix.length} finding(s) capping the score`
                                             : 'No capping findings'}
                                     </p>
                                     {compliance.caveats && compliance.caveats.map((c, i) => (
-                                        <p key={i} className="text-xs text-amber-600 mt-2">⚠ {c}</p>
+                                        <p key={i} className="text-xs text-risk-med mt-2 leading-relaxed">⚠ {c}</p>
                                     ))}
                                 </div>
                             ) : (
@@ -235,30 +322,30 @@
                             )}
 
                             {classification.status === 'classified' ? (
-                                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Traffic Leakage</h3>
-                                    <div className="mt-2 text-4xl font-bold text-orange-500">{pct(classification.confidence)}</div>
-                                    <p className="text-sm text-gray-500 mt-2">Adversary certainty of {classification.predicted_class} traffic</p>
+                                <div className="bg-ink-800 p-6 rounded-md border border-line">
+                                    <h3 className="text-sm font-medium text-muted">Traffic Leakage</h3>
+                                    <div className="mt-2 text-4xl font-semibold font-mono text-risk-med">{pct(classification.confidence)}</div>
+                                    <p className="text-sm text-muted mt-2">Adversary certainty of {classification.predicted_class} traffic</p>
                                 </div>
                             ) : (
                                 <NotAvailableCard title="Traffic Leakage" reason={classification.reason} />
                             )}
 
                             {classification.status === 'classified' && countermeasures ? (
-                                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Recommended Fix</h3>
+                                <div className="bg-ink-800 p-6 rounded-md border border-line">
+                                    <h3 className="text-sm font-medium text-muted">Recommended Fix</h3>
                                     {best ? (
                                         <div>
-                                            <div className="mt-2 text-4xl font-bold text-green-600">{best.name}</div>
-                                            <p className="text-sm text-gray-500 mt-2">Drops leak from {pct(classification.confidence)} to {pct(best.after)} for {pct(best.overhead)} BW cost</p>
+                                            <div className="mt-2 text-4xl font-semibold tracking-tight text-pass">{best.name}</div>
+                                            <p className="text-sm text-muted mt-2">Drops leak from {pct(classification.confidence)} to {pct(best.after)} for {pct(best.overhead)} BW cost</p>
                                             {best.overhead > HIGH_OVERHEAD_PCT && (
-                                                <p className="text-xs text-amber-600 mt-2">⚠ Note: high bandwidth cost ({pct(best.overhead)}) - likely impractical for real-time traffic like VoIP in production.</p>
+                                                <p className="text-xs text-risk-med mt-2 leading-relaxed">⚠ Note: high bandwidth cost ({pct(best.overhead)}) - likely impractical for real-time traffic like VoIP in production.</p>
                                             )}
                                         </div>
                                     ) : (
                                         <div>
-                                            <div className="mt-2 text-2xl font-bold text-gray-600">None effective</div>
-                                            <p className="text-sm text-gray-500 mt-2">No tested countermeasure reduced leakage for this flow (MTU padding: {pct(countermeasures.mtu_confidence)}, adaptive padding: {pct(countermeasures.adaptive_confidence)} vs. {pct(classification.confidence)} baseline).</p>
+                                            <div className="mt-2 text-2xl font-semibold text-soft">None effective</div>
+                                            <p className="text-sm text-muted mt-2">No tested countermeasure reduced leakage for this flow (MTU padding: {pct(countermeasures.mtu_confidence)}, adaptive padding: {pct(countermeasures.adaptive_confidence)} vs. {pct(classification.confidence)} baseline).</p>
                                         </div>
                                     )}
                                 </div>
@@ -267,12 +354,12 @@
                             )}
                         </div>
 
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4">Countermeasure Cost-Benefit Analysis</h3>
+                        <div className="bg-ink-800 p-6 rounded-md border border-line">
+                            <h3 className="text-lg font-semibold text-white mb-4">Countermeasure Cost-Benefit Analysis</h3>
                             {classification.status === 'classified' && (classification.countermeasure_outcomes || []).length > 0 ? (
                                 <CountermeasureChart classification={classification} />
                             ) : (
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-muted">
                                     Not available: {classification.reason || 'countermeasures are simulated only on a classified flow.'}
                                 </p>
                             )}
@@ -287,83 +374,124 @@
 
                 if (classification.status !== 'classified') {
                     return (
-                        <div className="bg-gray-50 border-l-4 border-gray-400 p-4">
-                            <h3 className="text-sm font-medium text-gray-700">No traffic classification available</h3>
-                            <p className="mt-2 text-sm text-gray-600">{classification.reason}</p>
+                        <div className="empty-state">
+                            <div className="w-full max-w-2xl bg-ink-800 border border-line border-l-2 border-l-dim rounded-md p-4">
+                                <h3 className="text-sm font-medium text-soft">No traffic classification available</h3>
+                                <p className="mt-2 text-sm text-muted">{classification.reason}</p>
+                            </div>
                         </div>
                     );
                 }
 
                 return (
                     <div className="space-y-6">
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4">
+                        <div className="bg-risk-high/10 border border-risk-high/30 border-l-2 border-l-risk-high rounded-md p-4">
                             <div className="flex">
                                 <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">High Confidence Traffic Alert: {classification.predicted_class.toUpperCase()}</h3>
-                                    <div className="mt-2 text-sm text-red-700">
-                                        <p>Adversary Confidence: {pct(classification.confidence)}</p>
+                                    <h3 className="text-sm font-semibold text-white">High Confidence Traffic Alert: {classification.predicted_class.toUpperCase()}</h3>
+                                    <div className="mt-2 text-sm text-soft">
+                                        <p>Adversary Confidence: <span className="font-mono text-white">{pct(classification.confidence)}</span></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <h3 className="text-lg font-bold text-gray-800 mb-4">Flow Characteristics</h3>
-                            <p className="text-sm text-gray-600 mb-4">
-                                Why did the model classify this as {classification.predicted_class}? 
+                        <div className="bg-ink-800 p-6 rounded-md border border-line">
+                            <h3 className="text-lg font-semibold text-white mb-4">Flow Characteristics</h3>
+                            <p className="text-sm text-muted mb-4 leading-relaxed">
+                                Why did the model classify this as {classification.predicted_class}?
                                 These are the actual SPLT flow statistics the classifier saw for this capture, along with SHAP explanations.
                             </p>
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-50 p-4 rounded">
-                                    <div className="text-xs text-gray-500 uppercase">Packet Count</div>
-                                    <div className="text-xl font-semibold text-gray-800">{classification.flow_stats.pkt_count}</div>
+                                <div className="bg-ink-900 border border-line p-4 rounded-md">
+                                    <div className="text-xs text-muted">Packet Count</div>
+                                    <div className="text-xl font-mono font-medium text-white mt-1">{classification.flow_stats.pkt_count}</div>
                                 </div>
-                                <div className="bg-gray-50 p-4 rounded">
-                                    <div className="text-xs text-gray-500 uppercase">Mean Packet Length</div>
-                                    <div className="text-xl font-semibold text-gray-800">{classification.flow_stats.mean_len.toFixed(1)} B</div>
+                                <div className="bg-ink-900 border border-line p-4 rounded-md">
+                                    <div className="text-xs text-muted">Mean Packet Length</div>
+                                    <div className="text-xl font-mono font-medium text-white mt-1">{classification.flow_stats.mean_len.toFixed(1)} B</div>
                                 </div>
-                                <div className="bg-gray-50 p-4 rounded">
-                                    <div className="text-xs text-gray-500 uppercase">Mean Inter-Arrival Time</div>
-                                    <div className="text-xl font-semibold text-gray-800">{(classification.flow_stats.mean_iat * 1000).toFixed(1)} ms</div>
+                                <div className="bg-ink-900 border border-line p-4 rounded-md">
+                                    <div className="text-xs text-muted">Mean Inter-Arrival Time</div>
+                                    <div className="text-xl font-mono font-medium text-white mt-1">{(classification.flow_stats.mean_iat * 1000).toFixed(1)} ms</div>
                                 </div>
-                                <div className="bg-gray-50 p-4 rounded">
-                                    <div className="text-xs text-gray-500 uppercase">Direction Ratio</div>
-                                    <div className="text-xl font-semibold text-gray-800">{classification.flow_stats.direction_ratio.toFixed(2)}</div>
+                                <div className="bg-ink-900 border border-line p-4 rounded-md">
+                                    <div className="text-xs text-muted">Direction Ratio</div>
+                                    <div className="text-xl font-mono font-medium text-white mt-1">{classification.flow_stats.direction_ratio.toFixed(2)}</div>
                                 </div>
                             </div>
                             {classification.shap_explanation ? (
                                 <div className="mt-6">
-                                    <h4 className="text-md font-bold text-gray-700 mb-3">Live SHAP Explanation</h4>
+                                    <h4 className="text-md font-semibold text-soft mb-3">Live SHAP Explanation</h4>
                                     <div className="space-y-2">
                                         {classification.shap_explanation.top_features.map((tf, i) => (
                                             <div key={i} className="flex items-center text-sm">
-                                                <div className="w-1/4 font-medium text-gray-600 truncate">{tf.feature}</div>
-                                                <div className="w-1/4 text-gray-500 text-right pr-4">{tf.actual_value.toFixed(2)}</div>
+                                                <div className="w-1/4 font-mono text-soft truncate">{tf.feature}</div>
+                                                <div className="w-1/4 font-mono text-muted text-right pr-4">{tf.actual_value.toFixed(2)}</div>
                                                 <div className="w-1/2 flex items-center">
                                                     <div style={{
-                                                        width: `${Math.min(Math.abs(tf.shap_value) * 100, 100)}%`, 
+                                                        width: `${Math.min(Math.abs(tf.shap_value) * 100, 100)}%`,
                                                         height: '16px',
-                                                        backgroundColor: tf.shap_value >= 0 ? '#10b981' : '#ef4444'
+                                                        borderRadius: '2px',
+                                                        backgroundColor: tf.shap_value >= 0 ? '#a78bfa' : '#64748b'
                                                     }}></div>
-                                                    <span className="ml-2 text-xs text-gray-500">{tf.shap_value.toFixed(3)}</span>
+                                                    <span className="ml-2 text-xs font-mono text-muted">{tf.shap_value.toFixed(3)}</span>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
+                                    <p className="mt-3 text-xs text-muted">Violet bars pushed the model toward {classification.predicted_class}; grey bars pushed away from it.</p>
                                 </div>
                             ) : (
                                 <div>
-                                    <p className="text-xs text-gray-400 mt-4">
+                                    <p className="text-xs text-muted mt-4">
                                         Reference SHAP summary from model training (aggregate feature importance across the
                                         training set, not specific to this request):
                                     </p>
-                                    <img src={`${API_BASE}/assets/shap_waterfall_voip.png`} alt="SHAP Waterfall (training-time reference)" className="w-full max-w-md border rounded mt-2" />
+                                    <img src={`${API_BASE}/assets/shap_waterfall_voip.png`} alt="SHAP Waterfall (training-time reference)" className="w-full max-w-md border border-line rounded-md mt-2" />
                                 </div>
                             )}
                         </div>
                     </div>
                 );
             };
+
+            // Risk band from the compliance score, using the same thresholds as
+            // report_generator.py's _risk_color() so the dashboard and the PDF
+            // always put a score in the same band.
+            const riskBand = (score) => score >= 90 ? 'pass' : score >= 70 ? 'med' : 'high';
+            const BAND_COLOR = { pass: '#34d399', med: '#f59e0b', high: '#ef4444' };
+            const BAND_TEXT = { pass: 'text-pass', med: 'text-risk-med', high: 'text-risk-high risk-glow' };
+
+            // Ring gauge: a visual encoding of the risk number already shown
+            // beside it (decorative, so hidden from screen readers).
+            const RiskGauge = ({ value, band }) => {
+                const r = 34, c = 2 * Math.PI * r;
+                const filled = Math.max(0, Math.min(100, value)) / 100 * c;
+                return (
+                    <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true" className="shrink-0">
+                        <circle cx="44" cy="44" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="9" />
+                        <circle cx="44" cy="44" r={r} fill="none" stroke={BAND_COLOR[band]} strokeWidth="9"
+                            strokeLinecap="round" strokeDasharray={`${filled} ${c}`} transform="rotate(-90 44 44)" />
+                    </svg>
+                );
+            };
+
+            // Severity badge colours: red = high/critical, amber = medium,
+            // green = pass, grey = anything else (info).
+            const severityBadge = (severity) => ({
+                CRITICAL: 'bg-risk-high/5 text-risk-high ring-risk-high/40',
+                HIGH: 'bg-risk-high/5 text-risk-high ring-risk-high/40',
+                MEDIUM: 'bg-risk-med/10 text-risk-med ring-risk-med/40',
+                PASS: 'bg-pass/10 text-pass ring-pass/40',
+            }[severity] || 'bg-white/5 text-muted ring-line');
+            // Left-edge bar in the badge's colour, so the list scans by colour.
+            // '!' (important) because the list's divide-line colour would otherwise
+            // override every row's border colour after the first.
+            const severityBar = (severity) => ({
+                CRITICAL: '!border-l-risk-high', HIGH: '!border-l-risk-high',
+                MEDIUM: '!border-l-risk-med', PASS: '!border-l-pass',
+            }[severity] || '!border-l-accent');
 
             const renderAuditorView = () => {
                 if (!results) return null;
@@ -373,9 +501,11 @@
                     return (
                         <div className="space-y-4">
                             <div className="flex justify-end">{renderExportButtons()}</div>
-                            <div className="bg-gray-50 border-l-4 border-gray-400 p-4">
-                                <h3 className="text-sm font-medium text-gray-700">Compliance could not be assessed</h3>
-                                <p className="mt-2 text-sm text-gray-600">{compliance.reason}</p>
+                            <div className="empty-state">
+                                <div className="w-full max-w-2xl bg-ink-800 border border-line border-l-2 border-l-dim rounded-md p-4">
+                                    <h3 className="text-sm font-medium text-soft">Compliance could not be assessed</h3>
+                                    <p className="mt-2 text-sm text-muted">{compliance.reason}</p>
+                                </div>
                             </div>
                         </div>
                     );
@@ -384,29 +514,29 @@
                 return (
                     <div className="space-y-6">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-gray-800">NIST SP 800-77 Compliance Breakdown</h3>
+                            <h3 className="text-lg font-semibold text-white">NIST SP 800-77 Compliance Breakdown</h3>
                             {renderExportButtons()}
                         </div>
                         {compliance.caveats && compliance.caveats.length > 0 && (
-                            <div className="bg-amber-50 border-l-4 border-amber-400 p-4">
+                            <div className="bg-risk-med/10 border border-risk-med/30 border-l-2 border-l-risk-med rounded-md p-4">
                                 {compliance.caveats.map((c, i) => (
-                                    <p key={i} className="text-sm text-amber-800">⚠ {c}</p>
+                                    <p key={i} className="text-sm text-risk-med leading-relaxed">⚠ {c}</p>
                                 ))}
                             </div>
                         )}
-                        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                            <ul className="divide-y divide-gray-200">
+                        <div className="bg-ink-800 border border-line overflow-hidden rounded-md">
+                            <ul className="divide-y divide-line">
                                 {compliance.findings.map((f, i) => (
-                                    <li key={i} className="px-6 py-4">
-                                        <div className="flex items-center justify-between">
+                                    <li key={i} className={`px-6 py-4 border-l-4 ${severityBar(f.severity)}`}>
+                                        <div className="flex items-center justify-between gap-6">
                                             <div className="flex items-center">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${f.severity === 'HIGH' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold font-mono rounded-sm ring-1 ring-inset ${severityBadge(f.severity)}`}>
                                                     {f.severity}
                                                 </span>
-                                                <p className="ml-4 text-sm font-medium text-gray-900">{f.message}</p>
+                                                <p className="ml-4 text-sm font-medium text-text">{f.message}</p>
                                             </div>
-                                            <div className="text-sm text-gray-500">
-                                                Severity Cap: {f.cap_applied}
+                                            <div className="text-sm text-muted whitespace-nowrap">
+                                                Severity Cap: <span className="font-mono text-soft">{f.cap_applied}</span>
                                             </div>
                                         </div>
                                     </li>
@@ -418,27 +548,35 @@
             };
 
             return (
-                <div className="min-h-screen">
-                    <header className="bg-slate-900 text-white p-4 shadow-md">
-                        <div className="max-w-7xl mx-auto flex justify-between items-center">
-                            <h1 className="text-xl font-bold tracking-tight">AI-Powered IPsec Protocol Analyzer</h1>
-                            <div className="text-sm text-slate-300">Smart India Hackathon (PS 26160)</div>
+                <div className="min-h-screen flex flex-col">
+                    <header className="border-b border-line bg-ink-950/80 backdrop-blur">
+                        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                            <a href="/" className="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-white rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
+                                <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true">
+                                    <circle cx="16" cy="16" r="10" fill="none" stroke="#22d3ee" strokeWidth="2" />
+                                    <circle cx="16" cy="16" r="3.5" fill="#22d3ee" />
+                                </svg>
+                                IPsecGuard AI
+                                <span className="ml-1 text-sm font-normal text-muted">Dashboard</span>
+                            </a>
                         </div>
                     </header>
 
-                    <main className="max-w-7xl mx-auto p-6 mt-4">
+                    <main className="w-full flex-1 max-w-7xl mx-auto p-6 mt-4">
+                        <h1 className="sr-only">AI-Powered IPsec Protocol Analyzer</h1>
                         {!results ? (
-                            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 max-w-xl mx-auto text-center">
-                                <h2 className="text-2xl font-bold text-gray-800 mb-6">Upload PCAP for Analysis</h2>
+                            <div className="bg-ink-800 p-8 rounded-md border border-line max-w-xl mx-auto mt-10 text-center">
+                                <h2 className="text-2xl font-semibold tracking-tight text-white mb-2">Upload PCAP for Analysis</h2>
+                                <p className="text-sm text-muted mb-6 leading-relaxed">A packet capture from your VPN gateway. Payloads are never decrypted: only headers, sizes and timing are read.</p>
                                 <form onSubmit={handleFileUpload} className="space-y-4">
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500 transition">
-                                        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="w-full" accept=".pcap,.pcapng" />
+                                    <div className="border border-dashed border-white/15 bg-ink-950/60 rounded-md p-6 hover:border-accent/60 transition">
+                                        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="w-full text-sm text-muted file:mr-4 file:rounded-sm file:border file:border-line file:bg-ink-800 file:px-4 file:py-2 file:text-sm file:font-medium file:text-soft hover:file:border-accent/60 hover:file:text-white file:cursor-pointer" accept=".pcap,.pcapng" />
                                     </div>
-                                    <button type="submit" disabled={!file || isUploading} className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${!file || isUploading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}>
+                                    <button type="submit" disabled={!file || isUploading} className="btn-primary w-full py-2.5 px-4 text-sm">
                                         {isUploading ? 'Analyzing Pipeline...' : 'Run Analysis'}
                                     </button>
                                 </form>
-                                {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+                                {error && <p className="text-risk-high mt-4 text-sm">{error}</p>}
                             </div>
                         ) : results.status === 'error' ? (
                             // main.py returns {status:"error", filename, error} with NO
@@ -446,30 +584,36 @@
                             // empty pcap - the tabs below assume those keys exist, so
                             // this case is handled separately rather than falling
                             // through into them.
-                            <div className="bg-white p-8 rounded-lg shadow-sm border border-red-200 max-w-xl mx-auto text-center">
-                                <h2 className="text-xl font-bold text-red-700 mb-2">Analysis Failed</h2>
-                                <p className="text-sm text-gray-600">{results.error}</p>
-                                <button onClick={() => setResults(null)} className="mt-6 text-blue-600 hover:text-blue-800 text-sm font-medium">Try Another File</button>
+                            <div className="bg-ink-800 p-8 rounded-md border border-risk-high/40 max-w-xl mx-auto mt-10 text-center">
+                                <h2 className="text-xl font-semibold text-risk-high mb-2">Analysis Failed</h2>
+                                <p className="text-sm text-muted">{results.error}</p>
+                                <button onClick={() => setResults(null)} className="link-accent mt-6 text-sm">Try Another File</button>
                             </div>
                         ) : (
                             <div>
-                                <div className="flex border-b border-gray-200 mb-6 space-x-8">
-                                    <button onClick={() => setActiveTab('ciso')} className={`pb-4 px-2 ${activeTab === 'ciso' ? 'tab-active' : 'tab-inactive'}`}>CISO Executive View</button>
-                                    <button onClick={() => setActiveTab('soc')} className={`pb-4 px-2 ${activeTab === 'soc' ? 'tab-active' : 'tab-inactive'}`}>SOC Analyst View</button>
-                                    <button onClick={() => setActiveTab('auditor')} className={`pb-4 px-2 ${activeTab === 'auditor' ? 'tab-active' : 'tab-inactive'}`}>Compliance Auditor View</button>
+                                <div className="flex border-b border-line mb-6 space-x-8">
+                                    <button onClick={() => setActiveTab('ciso')} className={`tab-btn pb-4 px-2 ${activeTab === 'ciso' ? 'tab-active' : 'tab-inactive'}`}>CISO Executive View</button>
+                                    <button onClick={() => setActiveTab('soc')} className={`tab-btn pb-4 px-2 ${activeTab === 'soc' ? 'tab-active' : 'tab-inactive'}`}>SOC Analyst View</button>
+                                    <button onClick={() => setActiveTab('auditor')} className={`tab-btn pb-4 px-2 ${activeTab === 'auditor' ? 'tab-active' : 'tab-inactive'}`}>Compliance Auditor View</button>
                                 </div>
-                                
+
                                 {activeTab === 'ciso' && renderCISOView()}
                                 {activeTab === 'soc' && renderSOCView()}
                                 {activeTab === 'auditor' && renderAuditorView()}
-                                {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+                                {error && <p className="text-risk-high mt-4 text-sm">{error}</p>}
 
-                                <div className="mt-8 pt-4 border-t border-gray-200 text-center">
-                                    <button onClick={() => setResults(null)} className="text-blue-600 hover:text-blue-800 text-sm font-medium">Analyze Another File</button>
+                                <div className="mt-8 pt-4 border-t border-line text-center">
+                                    <button onClick={() => setResults(null)} className="link-accent text-sm">Analyze Another File</button>
                                 </div>
                             </div>
                         )}
                     </main>
+
+                    {/* Same treatment as the landing page footer; the fuller
+                        SIH / NTRO framing lives there, not repeated here. */}
+                    <footer className="border-t border-white/5">
+                        <div className="max-w-7xl mx-auto px-6 py-5 text-sm text-muted">IPsecGuard AI — PS 26160</div>
+                    </footer>
                 </div>
             );
         };
