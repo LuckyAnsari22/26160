@@ -59,6 +59,29 @@ def test_pipeline_rejects_invalid_pcap():
     print(" -> Rejected:", results["error"])
 
 
+def test_cache_control_headers():
+    base = API_URL.rsplit("/api/v1", 1)[0]
+
+    # HTML must always be revalidated - including the 304 on a repeat visit.
+    first = requests.get(f"{base}/")
+    assert first.headers.get("Cache-Control") == "no-cache"
+    etag = first.headers.get("ETag")
+    if etag:
+        again = requests.get(f"{base}/", headers={"If-None-Match": etag})
+        assert again.status_code == 304
+        assert again.headers.get("Cache-Control") == "no-cache"
+
+    # Un-hashed image assets: short-lived cache only.
+    asset = requests.get(f"{API_URL}/assets/shap_waterfall_voip.png")
+    assert asset.status_code == 200
+    assert asset.headers.get("Cache-Control") == "max-age=60"
+
+    # JSON API responses are untouched.
+    api = requests.get(f"{API_URL}/results/nonexistent")
+    assert "Cache-Control" not in api.headers
+
+
 if __name__ == "__main__":
     test_pipeline()
     test_pipeline_rejects_invalid_pcap()
+    test_cache_control_headers()

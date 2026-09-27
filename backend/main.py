@@ -43,7 +43,32 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+# Cache policy for the HTML/asset routes. JSON API responses are left alone.
+#   - HTML entry points ("/", "*.html"): no-cache, i.e. always revalidate with
+#     the server (a cheap 304 when unchanged), so a redeploy is never hidden
+#     behind a stale copy. Decided by path, not content type, so 304s carry it too.
+#   - Other static files and the docs/assets images: filenames aren't
+#     content-hashed, so only a short max-age - they can't outlive a redeploy
+#     by more than a minute.
+HTML_CACHE_CONTROL = "no-cache"
+ASSET_CACHE_CONTROL = "max-age=60"
+
+
+@app.middleware("http")
+async def cache_control_headers(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.startswith("/api/v1/assets/"):
+        if response.status_code in (200, 304):
+            response.headers["Cache-Control"] = ASSET_CACHE_CONTROL
+    elif not path.startswith("/api/"):
+        is_html = path.endswith("/") or path.endswith(".html")
+        response.headers["Cache-Control"] = HTML_CACHE_CONTROL if is_html else ASSET_CACHE_CONTROL
+    return response
+
+
+BASE_DIR =os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 UPLOAD_DIR = os.path.join(BASE_DIR, "data", "uploads")
 MODEL_PATH = os.path.join(BASE_DIR, "models", "calibrated_rf_model.pkl")
 MODE_MODEL_PATH = os.path.join(BASE_DIR, "models", "mode_classifier.pkl")
