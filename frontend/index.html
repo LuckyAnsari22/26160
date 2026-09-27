@@ -93,6 +93,35 @@
         /* A lone state message sits centred in the space below the tabs instead
            of top-aligned above an empty viewport. Only these wrappers get it. */
         .empty-state { display: flex; align-items: center; justify-content: center; min-height: 45vh; }
+
+        /* ---- Micro-animation. Everything is under 1s, never delays data, and is
+           switched off for prefers-reduced-motion (see the media query below
+           and REDUCED_MOTION in the script). */
+        @keyframes tab-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+        .tab-panel { animation: tab-in 180ms ease-out both; }
+
+        .upload-zone {
+            border: 1px dashed rgb(255 255 255 / 0.15); background: rgb(5 7 13 / 0.6);
+            transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+        }
+        .upload-zone:hover { border-color: rgb(34 211 238 / 0.6); background: rgb(34 211 238 / 0.04); }
+        .upload-zone.is-dragging {
+            border-style: solid; border-color: #22d3ee; background: rgb(34 211 238 / 0.08);
+            box-shadow: 0 0 0 3px rgb(34 211 238 / 0.15);
+        }
+
+        .btn-primary.is-loading:disabled { opacity: 1; cursor: progress; background: rgb(34 211 238 / 0.14); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner {
+            width: 14px; height: 14px; margin-right: 0.6rem; border-radius: 999px;
+            border: 2px solid rgb(34 211 238 / 0.3); border-top-color: #22d3ee;
+            animation: spin 700ms linear infinite;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tab-panel, .spinner { animation: none; }
+            .upload-zone { transition: none; }
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -100,6 +129,34 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+
+        // Count-up for headline numbers (and the risk gauge, so both move
+        // together). Runs once per analysis: components defined inside
+        // Dashboard remount on every re-render, so a replay guard is needed.
+        // Always ends on the exact value; reduced motion shows it immediately.
+        const REDUCED_MOTION = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        const COUNT_UP_MS = 700;
+        const countedUp = new Set();
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+        const useCountUp = (target, key) => {
+            const skip = REDUCED_MOTION || !key || countedUp.has(key);
+            const [value, setValue] = useState(skip ? target : 0);
+            useEffect(() => {
+                if (skip) { setValue(target); return; }
+                countedUp.add(key);
+                const start = performance.now();
+                let raf;
+                const tick = (now) => {
+                    const t = Math.min(1, (now - start) / COUNT_UP_MS);
+                    setValue(t < 1 ? target * easeOutCubic(t) : target);
+                    if (t < 1) raf = requestAnimationFrame(tick);
+                };
+                raf = requestAnimationFrame(tick);
+                return () => cancelAnimationFrame(raf);
+            }, [target, key]);
+            return value;
+        };
+        const CountUp = ({ value, animKey, format }) => format(useCountUp(value, animKey));
 
         const Dashboard = () => {
             const [activeTab, setActiveTab] = useState('ciso');
@@ -110,6 +167,8 @@
             // /results/{id} doesn't echo the id back, so keep the one /analyze returned for export.
             const [analysisId, setAnalysisId] = useState(null);
             const [exportingType, setExportingType] = useState(null);
+            const [isDragging, setIsDragging] = useState(false);
+            const fileInputRef = React.useRef(null);
 
             const API_BASE = window.location.protocol === "file:"
                 ? "http://localhost:8000/api/v1"
@@ -305,8 +364,8 @@
                                 <div className="bg-ink-800 p-6 rounded-md border border-line">
                                     <h3 className="text-sm font-medium text-muted">Overall Risk Score</h3>
                                     <div className="mt-3 flex items-center gap-4">
-                                        <RiskGauge value={100 - compliance.score} band={riskBand(compliance.score)} />
-                                        <div className={`text-4xl font-semibold font-mono ${BAND_TEXT[riskBand(compliance.score)]}`}>{100 - compliance.score}/100</div>
+                                        <RiskGauge value={100 - compliance.score} band={riskBand(compliance.score)} animKey={`${analysisId}:gauge`} />
+                                        <div className={`text-4xl font-semibold font-mono ${BAND_TEXT[riskBand(compliance.score)]}`}><CountUp value={100 - compliance.score} animKey={`${analysisId}:risk`} format={(v) => `${Math.round(v)}/100`} /></div>
                                     </div>
                                     <p className="text-sm text-muted mt-2">
                                         {compliance.threat_matrix.length > 0
@@ -324,7 +383,7 @@
                             {classification.status === 'classified' ? (
                                 <div className="bg-ink-800 p-6 rounded-md border border-line">
                                     <h3 className="text-sm font-medium text-muted">Traffic Leakage</h3>
-                                    <div className="mt-2 text-4xl font-semibold font-mono text-risk-med">{pct(classification.confidence)}</div>
+                                    <div className="mt-2 text-4xl font-semibold font-mono text-risk-med"><CountUp value={classification.confidence} animKey={`${analysisId}:leak`} format={pct} /></div>
                                     <p className="text-sm text-muted mt-2">Adversary certainty of {classification.predicted_class} traffic</p>
                                 </div>
                             ) : (
@@ -465,9 +524,10 @@
 
             // Ring gauge: a visual encoding of the risk number already shown
             // beside it (decorative, so hidden from screen readers).
-            const RiskGauge = ({ value, band }) => {
+            const RiskGauge = ({ value, band, animKey }) => {
                 const r = 34, c = 2 * Math.PI * r;
-                const filled = Math.max(0, Math.min(100, value)) / 100 * c;
+                const shown = useCountUp(value, animKey);
+                const filled = Math.max(0, Math.min(100, shown)) / 100 * c;
                 return (
                     <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true" className="shrink-0">
                         <circle cx="44" cy="44" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="9" />
@@ -569,11 +629,25 @@
                                 <h2 className="text-2xl font-semibold tracking-tight text-white mb-2">Upload PCAP for Analysis</h2>
                                 <p className="text-sm text-muted mb-6 leading-relaxed">A packet capture from your VPN gateway. Payloads are never decrypted: only headers, sizes and timing are read.</p>
                                 <form onSubmit={handleFileUpload} className="space-y-4">
-                                    <div className="border border-dashed border-white/15 bg-ink-950/60 rounded-md p-6 hover:border-accent/60 transition">
-                                        <input type="file" onChange={(e) => setFile(e.target.files[0])} className="w-full text-sm text-muted file:mr-4 file:rounded-sm file:border file:border-line file:bg-ink-800 file:px-4 file:py-2 file:text-sm file:font-medium file:text-soft hover:file:border-accent/60 hover:file:text-white file:cursor-pointer" accept=".pcap,.pcapng" />
+                                    <div
+                                        className={`upload-zone rounded-md p-6 ${isDragging ? 'is-dragging' : ''}`}
+                                        onDragEnter={(e) => { e.preventDefault(); setIsDragging(true); }}
+                                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                                        onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setIsDragging(false); }}
+                                        onDrop={(e) => {
+                                            // Without this, dropping beside the input would make the browser open the file.
+                                            e.preventDefault();
+                                            setIsDragging(false);
+                                            const files = e.dataTransfer.files;
+                                            if (files && files.length) { fileInputRef.current.files = files; setFile(files[0]); }
+                                        }}
+                                    >
+                                        <input ref={fileInputRef} type="file" onChange={(e) => setFile(e.target.files[0])} className="w-full text-sm text-muted file:mr-4 file:rounded-sm file:border file:border-line file:bg-ink-800 file:px-4 file:py-2 file:text-sm file:font-medium file:text-soft hover:file:border-accent/60 hover:file:text-white file:cursor-pointer" accept=".pcap,.pcapng" />
                                     </div>
-                                    <button type="submit" disabled={!file || isUploading} className="btn-primary w-full py-2.5 px-4 text-sm">
-                                        {isUploading ? 'Analyzing Pipeline...' : 'Run Analysis'}
+                                    <button type="submit" disabled={!file || isUploading} aria-busy={isUploading} className={`btn-primary w-full py-2.5 px-4 text-sm ${isUploading ? 'is-loading' : ''}`}>
+                                        {isUploading ? (
+                                            <React.Fragment><span className="spinner" aria-hidden="true"></span>Analyzing Pipeline...</React.Fragment>
+                                        ) : 'Run Analysis'}
                                     </button>
                                 </form>
                                 {error && <p className="text-risk-high mt-4 text-sm">{error}</p>}
@@ -597,9 +671,12 @@
                                     <button onClick={() => setActiveTab('auditor')} className={`tab-btn pb-4 px-2 ${activeTab === 'auditor' ? 'tab-active' : 'tab-inactive'}`}>Compliance Auditor View</button>
                                 </div>
 
-                                {activeTab === 'ciso' && renderCISOView()}
-                                {activeTab === 'soc' && renderSOCView()}
-                                {activeTab === 'auditor' && renderAuditorView()}
+                                {/* key={activeTab} remounts the panel so each switch fades in. */}
+                                <div key={activeTab} className="tab-panel">
+                                    {activeTab === 'ciso' && renderCISOView()}
+                                    {activeTab === 'soc' && renderSOCView()}
+                                    {activeTab === 'auditor' && renderAuditorView()}
+                                </div>
                                 {error && <p className="text-risk-high mt-4 text-sm">{error}</p>}
 
                                 <div className="mt-8 pt-4 border-t border-line text-center">
@@ -608,12 +685,6 @@
                             </div>
                         )}
                     </main>
-
-                    {/* Same treatment as the landing page footer; the fuller
-                        SIH / NTRO framing lives there, not repeated here. */}
-                    <footer className="border-t border-white/5">
-                        <div className="max-w-7xl mx-auto px-6 py-5 text-sm text-muted">IPsecGuard AI — PS 26160</div>
-                    </footer>
                 </div>
             );
         };
